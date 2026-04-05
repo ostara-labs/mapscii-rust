@@ -122,32 +122,25 @@ async fn run_app(
     terminal: &mut Terminal<ratatui::backend::CrosstermBackend<io::Stdout>>,
     state: &mut MapState,
 ) -> Result<()> {
-    let mut mouse_dragging: Option<(u16, u16, f64, f64)> = None;
-    
-    // Debouncing state for navigation events
     const DEBOUNCE_MS: u64 = 50;
-    let mut pending_reload = true; // Start with true to load tiles after first render
+    let mut pending_reload = true;
     let mut last_navigation = Instant::now();
 
     loop {
-        // Check if we should perform debounced tile reload
         if pending_reload && last_navigation.elapsed() >= Duration::from_millis(DEBOUNCE_MS) {
             state.load_visible_tiles().await;
             pending_reload = false;
         }
         
-        // Draw
         terminal.draw(|frame| {
             let chunks = Layout::default()
                 .direction(Direction::Vertical)
                 .constraints([Constraint::Min(1), Constraint::Length(1)])
                 .split(frame.area());
 
-            // Map widget
             let map_area = chunks[0];
             frame.render_stateful_widget(MapWidget::new(), map_area, state);
 
-            // Status bar
             let status = state.status_text();
             let status_bar = Paragraph::new(Span::styled(
                 format!(" {status}  [arrows: move | a/z: zoom | c: braille | q: quit]"),
@@ -156,7 +149,6 @@ async fn run_app(
             frame.render_widget(status_bar, chunks[1]);
         })?;
 
-        // Poll for events (with a short timeout for responsiveness)
         if event::poll(Duration::from_millis(50))? {
             match event::read()? {
                 Event::Key(key) if key.kind == KeyEventKind::Press => {
@@ -216,43 +208,18 @@ async fn run_app(
                             last_navigation = Instant::now();
                         }
                         MouseEventKind::Down(crossterm::event::MouseButton::Left) => {
-                            mouse_dragging = Some((
-                                mouse.column,
-                                mouse.row,
-                                state.center_lat,
-                                state.center_lon,
-                            ));
+                            state.drag_start(mouse.column as f64, mouse.row as f64);
                         }
                         MouseEventKind::Up(crossterm::event::MouseButton::Left) => {
-                            if mouse_dragging.is_some() {
-                                mouse_dragging = None;
+                            if state.drag_end() {
                                 pending_reload = true;
                                 last_navigation = Instant::now();
                             }
                         }
                         MouseEventKind::Drag(crossterm::event::MouseButton::Left) => {
-                            if let Some((start_col, start_row, start_lat, start_lon)) =
-                                mouse_dragging
-                            {
-                                let dx = (start_col as f64 - mouse.column as f64) * 2.0;
-                                let dy = (start_row as f64 - mouse.row as f64) * 4.0;
-
-                                let tile_size = mapscii_core::utils::tilesize_at_zoom(
-                                    state.zoom,
-                                    &state.config,
-                                );
-                                let z = mapscii_core::utils::base_zoom(
-                                    state.zoom,
-                                    &state.config,
-                                ) as f64;
-                                let center =
-                                    mapscii_core::utils::ll2tile(start_lon, start_lat, z);
-                                let (new_lon, new_lat) = mapscii_core::utils::tile2ll(
-                                    center.x + dx / tile_size,
-                                    center.y + dy / tile_size,
-                                    z,
-                                );
-                                state.set_center(new_lat, new_lon);
+                            if state.drag_to(mouse.column as f64, mouse.row as f64) {
+                                pending_reload = true;
+                                last_navigation = Instant::now();
                             }
                         }
                         _ => {}

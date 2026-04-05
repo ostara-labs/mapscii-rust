@@ -62,6 +62,8 @@ pub struct MapState {
     pub needs_redraw: bool,
     /// The last rendered viewport size (cols, rows) — detect resize.
     last_area: Option<(u16, u16)>,
+    /// Active drag anchor: (start_col, start_row, start_lat, start_lon).
+    drag_anchor: Option<(f64, f64, f64, f64)>,
 }
 
 impl MapState {
@@ -89,6 +91,7 @@ impl MapState {
             overlays: OverlayCollection::new(),
             needs_redraw: true,
             last_area: None,
+            drag_anchor: None,
         }
     }
 
@@ -132,6 +135,148 @@ impl MapState {
         } else {
             self.zoom = new_zoom;
         }
+        self.needs_redraw = true;
+    }
+
+    /// Set the zoom level to an absolute value (clamped to `[min_zoom, max_zoom]`).
+    pub fn set_zoom(&mut self, zoom: f64) {
+        self.zoom = zoom.clamp(self.min_zoom, self.config.max_zoom as f64);
+        self.needs_redraw = true;
+    }
+
+    /// Zoom by `step` anchored at a terminal cell position (`col`, `row`).
+    ///
+    /// The map point under `(col, row)` stays fixed while the zoom changes.
+    /// This is the behavior callers expect for scroll-wheel zoom: the cursor
+    /// position stays put.
+    pub fn zoom_at(&mut self, step: f64, col: f64, row: f64) {
+        let (anchor_lat, anchor_lon) = self.colrow_to_ll(col, row);
+
+        let old_zoom = self.zoom;
+        self.zoom_by(step);
+
+        if (self.zoom - old_zoom).abs() < f64::EPSILON {
+            return;
+        }
+
+        let px = (col - 0.5) * 2.0;
+        let py = (row - 0.5) * 4.0;
+        let dx = px - self.renderer.width as f64 / 2.0;
+        let dy = py - self.renderer.height as f64 / 2.0;
+
+        let size = utils::tilesize_at_zoom(self.zoom, &self.config);
+        let z = utils::base_zoom(self.zoom, &self.config) as f64;
+        let anchor_tile = utils::ll2tile(anchor_lon, anchor_lat, z);
+        let (new_center_lon, new_center_lat) =
+            utils::tile2ll(anchor_tile.x - dx / size, anchor_tile.y - dy / size, z);
+
+        self.set_center(new_center_lat, new_center_lon);
+    }
+
+    // -- Drag ---------------------------------------------------------------
+
+    /// Begin a drag gesture at the given terminal cell position.
+    pub fn drag_start(&mut self, col: f64, row: f64) {
+        self.drag_anchor = Some((col, row, self.center_lat, self.center_lon));
+    }
+
+    /// Move the map so the point under `drag_start` stays under `(col, row)`.
+    ///
+    /// Returns `false` if no drag is active.
+    pub fn drag_to(&mut self, col: f64, row: f64) -> bool {
+        let Some((start_col, start_row, start_lat, start_lon)) = self.drag_anchor else {
+            return false;
+        };
+
+        let dx = (start_col - col) * 2.0;
+        let dy = (start_row - row) * 4.0;
+
+        let tile_size = utils::tilesize_at_zoom(self.zoom, &self.config);
+        let z = utils::base_zoom(self.zoom, &self.config) as f64;
+        let center = utils::ll2tile(start_lon, start_lat, z);
+        let (new_lon, new_lat) =
+            utils::tile2ll(center.x + dx / tile_size, center.y + dy / tile_size, z);
+
+        self.set_center(new_lat, new_lon);
+        true
+    }
+
+    /// End the current drag gesture. Returns `true` if a drag was active.
+    pub fn drag_end(&mut self) -> bool {
+        self.drag_anchor.take().is_some()
+    }
+
+    // -- Focus --------------------------------------------------------------
+
+    /// Set the center and zoom in a single call.
+    pub fn focus_position(&mut self, lat: f64, lon: f64, zoom: f64) {
+        self.set_center(lat, lon);
+        self.set_zoom(zoom);
+    }
+
+    /// Fit the map to a geographic bounding box.
+    ///
+    /// Computes the zoom level that makes the box fill the viewport, then
+    /// centers on the box's midpoint. The viewport must have been sized
+    /// (via `set_render_size` or at least one render pass) for this to
+    /// produce meaningful results.
+    pub fn focus_area(&mut self, min_lat: f64, min_lon: f64, max_lat: f64, max_lon: f64) {
+        let center_lat = (min_lat + max_lat) / 2.0;
+        let center_lon = (min_lon + max_lon) / 2.0;
+
+        let w = self.renderer.width as f64;
+        let h = self.renderer.height as f64;
+
+        if w < 1.0 || h < 1.0 {
+            self.set_center(center_lat, center_lon);
+            return;
+        }
+
+        let lon_span = (max_lon - min_lon).abs().max(1e-6);
+
+        // zoom_lon: 2^z <= viewport_width * 360 / (lon_span * project_size)
+        let ps = self.config.project_size as f64;
+        let zoom_lon = (w * 360.0 / (lon_span * ps)).log2();
+
+        // zoom_lat: use Mercator tile coordinates (higher lat = smaller y)
+        let min_y = utils::ll2tile(0.0, max_lat, 0.0).y;
+        let max_y = utils::ll2tile(0.0, min_lat, 0.0).y;
+        let y_span = (max_y - min_y).abs().max(1e-12);
+        let zoom_lat = (h / (y_span * ps)).log2();
+
+        let zoom = zoom_lon
+            .min(zoom_lat)
+            .clamp(self.min_zoom, self.config.max_zoom as f64);
+
+        self.set_center(center_lat, center_lon);
+        self.set_zoom(zoom);
+    }
+
+    // -- Render size --------------------------------------------------------
+
+    /// Set the render area size in terminal cells (for embedded use).
+    ///
+    /// Call before `load_visible_tiles` to size the viewport correctly
+    /// when the map occupies a sub-region of the terminal.
+    pub fn set_render_size(&mut self, cols: u16, rows: u16) {
+        let width = (cols as usize) * 2;
+        let height = (rows as usize) * 4;
+
+        if width < 4 || height < 4 {
+            return;
+        }
+
+        let width = width & !1;
+        let height = height & !3;
+
+        self.renderer.set_size(width, height);
+
+        self.min_zoom = 4.0 - (4096.0 / width as f64).ln() / std::f64::consts::LN_2;
+        if self.zoom < self.min_zoom {
+            self.zoom = self.min_zoom;
+        }
+
+        self.last_area = Some((cols, rows));
         self.needs_redraw = true;
     }
 
@@ -448,14 +593,127 @@ mod tests {
     fn test_colrow_to_ll() {
         let config = test_config();
         let mut state = MapState::new(config);
-        // Set up renderer size
         state.renderer.set_size(160, 80);
         state.zoom = 5.0;
         state.last_area = Some((80, 20));
 
-        // Center of viewport should map back to approximately the center
         let (lat, lon) = state.colrow_to_ll(40.0, 10.0);
         assert!((lat - state.center_lat).abs() < 1.0);
         assert!((lon - state.center_lon).abs() < 1.0);
+    }
+
+    #[test]
+    fn test_set_zoom() {
+        let config = test_config();
+        let mut state = MapState::new(config.clone());
+        state.set_zoom(10.0);
+        assert!((state.zoom - 10.0).abs() < 0.01);
+
+        state.set_zoom(100.0);
+        assert_eq!(state.zoom, config.max_zoom as f64);
+
+        state.set_zoom(-5.0);
+        assert_eq!(state.zoom, state.min_zoom);
+    }
+
+    #[test]
+    fn test_zoom_at() {
+        let config = test_config();
+        let mut state = MapState::new(config);
+        state.renderer.set_size(160, 80);
+        state.zoom = 5.0;
+        state.last_area = Some((80, 20));
+
+        let (lat_before, lon_before) = state.colrow_to_ll(20.0, 5.0);
+        state.zoom_at(1.0, 20.0, 5.0);
+        let (lat_after, lon_after) = state.colrow_to_ll(20.0, 5.0);
+
+        assert!((lat_after - lat_before).abs() < 0.5);
+        assert!((lon_after - lon_before).abs() < 0.5);
+    }
+
+    #[test]
+    fn test_drag_lifecycle() {
+        let config = test_config();
+        let mut state = MapState::new(config);
+        state.renderer.set_size(160, 80);
+        state.zoom = 5.0;
+        state.last_area = Some((80, 20));
+
+        assert!(!state.drag_to(50.0, 15.0));
+        assert!(!state.drag_end());
+
+        let lat_before = state.center_lat;
+        let lon_before = state.center_lon;
+
+        state.drag_start(40.0, 10.0);
+        assert!(state.drag_to(50.0, 10.0));
+
+        assert!(state.center_lon != lon_before || state.center_lat != lat_before);
+
+        assert!(state.drag_end());
+        assert!(!state.drag_end());
+    }
+
+    #[test]
+    fn test_focus_position() {
+        let config = test_config();
+        let mut state = MapState::new(config);
+        state.focus_position(35.6762, 139.6503, 8.0);
+        assert!((state.center_lat - 35.6762).abs() < 0.001);
+        assert!((state.center_lon - 139.6503).abs() < 0.001);
+        assert!((state.zoom - 8.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_focus_area() {
+        let config = test_config();
+        let mut state = MapState::new(config);
+        state.renderer.set_size(160, 80);
+        state.last_area = Some((80, 20));
+        state.min_zoom = 0.0;
+
+        state.focus_area(48.0, 2.0, 53.0, 14.0);
+
+        assert!((state.center_lat - 50.5).abs() < 0.01);
+        assert!((state.center_lon - 8.0).abs() < 0.01);
+        assert!(state.zoom > 0.0);
+        assert!(state.zoom <= state.config.max_zoom as f64);
+    }
+
+    #[test]
+    fn test_focus_area_no_viewport() {
+        let config = test_config();
+        let mut state = MapState::new(config);
+        let original_zoom = state.zoom;
+
+        state.focus_area(48.0, 2.0, 53.0, 14.0);
+
+        assert!((state.center_lat - 50.5).abs() < 0.01);
+        assert_eq!(state.zoom, original_zoom);
+    }
+
+    #[test]
+    fn test_set_render_size() {
+        let config = test_config();
+        let mut state = MapState::new(config);
+        let original_width = state.renderer.width;
+
+        state.set_render_size(80, 24);
+        assert_eq!(state.renderer.width, 160);
+        assert_eq!(state.renderer.height, 96);
+        assert_eq!(state.last_area, Some((80, 24)));
+        assert!(state.renderer.width != original_width || original_width == 160);
+    }
+
+    #[test]
+    fn test_set_render_size_too_small() {
+        let config = test_config();
+        let mut state = MapState::new(config);
+        state.set_render_size(80, 24);
+        let w = state.renderer.width;
+
+        state.set_render_size(1, 0);
+        assert_eq!(state.renderer.width, w);
     }
 }
