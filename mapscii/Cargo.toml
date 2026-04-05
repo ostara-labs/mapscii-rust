@@ -1,0 +1,18 @@
+[package]
+name = "mapscii"
+version = "0.1.0"
+edition = "2021"
+description = "MapSCII — The Whole World In Your Console"
+license = "MIT"
+
+[[bin]]
+name = "mapscii"
+path = "src/main.rs"
+
+[dependencies]
+mapscii-core = { path = "../mapscii-core" }
+ratatui = { version = "0.30", features = ["crossterm"] }
+crossterm = "0.29"
+clap = { version = "4", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+anyhow = "1"
