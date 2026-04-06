@@ -101,21 +101,29 @@ impl Canvas {
             return true;
         }
 
+        let clip_min_x = -(CLIP_MARGIN as f64);
+        let clip_min_y = -(CLIP_MARGIN as f64);
+        let clip_max_x = self.width as f64 + CLIP_MARGIN as f64;
+        let clip_max_y = self.height as f64 + CLIP_MARGIN as f64;
+
         let mut vertices: Vec<f64> = Vec::new();
         let mut holes: Vec<usize> = Vec::new();
 
         for (i, ring) in rings.iter().enumerate() {
+            let clipped = clip_polygon_sutherland_hodgman(
+                ring, clip_min_x, clip_min_y, clip_max_x, clip_max_y,
+            );
             if i == 0 {
-                if ring.len() < 3 {
+                if clipped.len() < 3 {
                     return false;
                 }
             } else {
-                if ring.len() < 3 {
+                if clipped.len() < 3 {
                     continue;
                 }
                 holes.push(vertices.len() / 2);
             }
-            for p in ring {
+            for p in &clipped {
                 vertices.push(p.x);
                 vertices.push(p.y);
             }
@@ -157,6 +165,16 @@ impl Canvas {
     }
 
     // -- Private drawing helpers -------------------------------------------
+
+    fn fill_background_span(&mut self, left: i32, right: i32, y: i32, color: ColorIdx) {
+        let cell_left = (left.max(0) as usize) / 2;
+        let cell_right = (right.max(0) as usize) / 2;
+        let cell_y_top = (y.max(0) as usize) & !3;
+        for cx in cell_left..=cell_right {
+            self.buffer
+                .set_background(cx as i32 * 2, cell_y_top as i32, color);
+        }
+    }
 
     /// Bresenham line with optional width (Zingl's algorithm).
     fn draw_line(
@@ -307,7 +325,6 @@ impl Canvas {
         edge_a.extend_from_slice(&edge_b);
         edge_a.extend_from_slice(&edge_c);
 
-        // Filter to visible rows and sort by (y, x)
         let height = self.height as i32;
         edge_a.retain(|&(_, y)| y >= 0 && y < height);
         edge_a.sort_by(|a, b| {
@@ -325,19 +342,21 @@ impl Canvas {
 
             if let Some(&(nx, ny)) = next {
                 if py == ny {
-                    // Fill horizontal span
                     let left = px.max(0);
                     let right = nx.min(self.width as i32 - 1);
                     if left >= 0 && right < self.width as i32 {
                         for x in left..=right {
                             self.buffer.set_pixel(x, py, color);
                         }
+                        self.fill_background_span(left, right, py, color);
                     }
                 } else {
                     self.buffer.set_pixel(px, py, color);
+                    self.buffer.set_background(px, py, color);
                 }
             } else {
                 self.buffer.set_pixel(px, py, color);
+                self.buffer.set_background(px, py, color);
                 break;
             }
 
@@ -418,6 +437,78 @@ impl Canvas {
     }
 }
 
+const CLIP_MARGIN: usize = 4;
+
+fn clip_polygon_sutherland_hodgman(
+    ring: &[Point],
+    min_x: f64,
+    min_y: f64,
+    max_x: f64,
+    max_y: f64,
+) -> Vec<Point> {
+    if ring.len() < 3 {
+        return Vec::new();
+    }
+
+    let mut output: Vec<Point> = ring.to_vec();
+
+    let edges: [(
+        fn(&Point, f64) -> bool,
+        fn(&Point, &Point, f64) -> Point,
+        f64,
+    ); 4] = [
+        (|p, v| p.x >= v, intersect_left, min_x),
+        (|p, v| p.x <= v, intersect_right, max_x),
+        (|p, v| p.y >= v, intersect_top, min_y),
+        (|p, v| p.y <= v, intersect_bottom, max_y),
+    ];
+
+    for &(inside, intersect, val) in &edges {
+        if output.is_empty() {
+            return output;
+        }
+        let input = output;
+        output = Vec::with_capacity(input.len());
+
+        let mut prev = input[input.len() - 1];
+        let mut prev_inside = inside(&prev, val);
+
+        for &curr in &input {
+            let curr_inside = inside(&curr, val);
+            if curr_inside {
+                if !prev_inside {
+                    output.push(intersect(&prev, &curr, val));
+                }
+                output.push(curr);
+            } else if prev_inside {
+                output.push(intersect(&prev, &curr, val));
+            }
+            prev = curr;
+            prev_inside = curr_inside;
+        }
+    }
+
+    output
+}
+
+fn intersect_left(a: &Point, b: &Point, x: f64) -> Point {
+    let t = (x - a.x) / (b.x - a.x);
+    Point::new(x, a.y + t * (b.y - a.y))
+}
+
+fn intersect_right(a: &Point, b: &Point, x: f64) -> Point {
+    intersect_left(a, b, x)
+}
+
+fn intersect_top(a: &Point, b: &Point, y: f64) -> Point {
+    let t = (y - a.y) / (b.y - a.y);
+    Point::new(a.x + t * (b.x - a.x), y)
+}
+
+fn intersect_bottom(a: &Point, b: &Point, y: f64) -> Point {
+    intersect_top(a, b, y)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -487,5 +578,215 @@ mod tests {
         let ring = vec![Point::new(0.0, 0.0), Point::new(10.0, 0.0)];
         let result = c.polygon(&[ring], 1);
         assert!(!result);
+    }
+
+    fn approx_eq(a: f64, b: f64) -> bool {
+        (a - b).abs() < 1e-9
+    }
+
+    fn points_approx_eq(a: &[Point], b: &[Point]) -> bool {
+        a.len() == b.len()
+            && a.iter()
+                .zip(b.iter())
+                .all(|(p, q)| approx_eq(p.x, q.x) && approx_eq(p.y, q.y))
+    }
+
+    fn shoelace_area(pts: &[Point]) -> f64 {
+        let n = pts.len();
+        (0..n)
+            .map(|i| {
+                let j = (i + 1) % n;
+                pts[i].x * pts[j].y - pts[j].x * pts[i].y
+            })
+            .sum()
+    }
+
+    #[test]
+    fn test_clip_degenerate_ring() {
+        let empty = clip_polygon_sutherland_hodgman(&[], 0.0, 0.0, 100.0, 100.0);
+        assert!(empty.is_empty());
+
+        let one = clip_polygon_sutherland_hodgman(&[Point::new(5.0, 5.0)], 0.0, 0.0, 100.0, 100.0);
+        assert!(one.is_empty());
+
+        let two = clip_polygon_sutherland_hodgman(
+            &[Point::new(5.0, 5.0), Point::new(10.0, 10.0)],
+            0.0,
+            0.0,
+            100.0,
+            100.0,
+        );
+        assert!(two.is_empty());
+    }
+
+    #[test]
+    fn test_clip_fully_inside() {
+        let ring = vec![
+            Point::new(10.0, 10.0),
+            Point::new(50.0, 10.0),
+            Point::new(30.0, 40.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        assert!(points_approx_eq(&clipped, &ring));
+    }
+
+    #[test]
+    fn test_clip_fully_outside() {
+        let ring = vec![
+            Point::new(-30.0, 10.0),
+            Point::new(-10.0, 10.0),
+            Point::new(-20.0, 40.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        assert!(clipped.is_empty());
+    }
+
+    #[test]
+    fn test_clip_fully_outside_above() {
+        let ring = vec![
+            Point::new(20.0, -30.0),
+            Point::new(50.0, -10.0),
+            Point::new(30.0, -20.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        assert!(clipped.is_empty());
+    }
+
+    #[test]
+    fn test_clip_partial_left_edge() {
+        // Given a square straddling the left edge, the left half is clipped
+        let ring = vec![
+            Point::new(-20.0, 20.0),
+            Point::new(40.0, 20.0),
+            Point::new(40.0, 60.0),
+            Point::new(-20.0, 60.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        let expected = vec![
+            Point::new(0.0, 20.0),
+            Point::new(40.0, 20.0),
+            Point::new(40.0, 60.0),
+            Point::new(0.0, 60.0),
+        ];
+        assert_eq!(clipped.len(), expected.len());
+        assert!(points_approx_eq(&clipped, &expected));
+    }
+
+    #[test]
+    fn test_clip_partial_right_edge() {
+        // Given a square straddling the right edge, the right half is clipped
+        let ring = vec![
+            Point::new(60.0, 20.0),
+            Point::new(120.0, 20.0),
+            Point::new(120.0, 60.0),
+            Point::new(60.0, 60.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        let expected = vec![
+            Point::new(60.0, 20.0),
+            Point::new(100.0, 20.0),
+            Point::new(100.0, 60.0),
+            Point::new(60.0, 60.0),
+        ];
+        assert_eq!(clipped.len(), expected.len());
+        assert!(points_approx_eq(&clipped, &expected));
+    }
+
+    #[test]
+    fn test_clip_corner_produces_rectangle() {
+        // Given a square (-20,-20)→(40,40) and clip rect (0,0)→(100,100),
+        // then clipping against left and top edges yields (0,0)→(40,40)
+        let ring = vec![
+            Point::new(-20.0, -20.0),
+            Point::new(40.0, -20.0),
+            Point::new(40.0, 40.0),
+            Point::new(-20.0, 40.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        assert!(clipped.len() >= 3);
+        for p in &clipped {
+            assert!(p.x >= -1e-9, "x {} should be >= 0", p.x);
+            assert!(p.y >= -1e-9, "y {} should be >= 0", p.y);
+            assert!(p.x <= 40.0 + 1e-9, "x {} should be <= 40", p.x);
+            assert!(p.y <= 40.0 + 1e-9, "y {} should be <= 40", p.y);
+        }
+    }
+
+    #[test]
+    fn test_clip_polygon_covers_viewport() {
+        // Given a polygon that fully encloses the clip rect,
+        // then the result is a rectangle matching the clip bounds
+        let ring = vec![
+            Point::new(-500.0, -500.0),
+            Point::new(600.0, -500.0),
+            Point::new(600.0, 600.0),
+            Point::new(-500.0, 600.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        assert_eq!(clipped.len(), 4);
+        for p in &clipped {
+            assert!(
+                (approx_eq(p.x, 0.0) || approx_eq(p.x, 100.0))
+                    && (approx_eq(p.y, 0.0) || approx_eq(p.y, 100.0)),
+                "vertex ({}, {}) should be a corner of the clip rect",
+                p.x,
+                p.y,
+            );
+        }
+    }
+
+    #[test]
+    fn test_clip_triangle_base_below_viewport() {
+        // Given a triangle with apex at (50,50) and base at y=120,
+        // then bottom clip at y=100 clips the base
+        let ring = vec![
+            Point::new(50.0, 50.0),
+            Point::new(80.0, 120.0),
+            Point::new(20.0, 120.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        assert!(clipped.len() >= 3);
+        for p in &clipped {
+            assert!(p.x >= -1e-9);
+            assert!(p.y >= -1e-9);
+            assert!(p.x <= 100.0 + 1e-9);
+            assert!(p.y <= 100.0 + 1e-9);
+        }
+        assert!(clipped
+            .iter()
+            .any(|p| approx_eq(p.x, 50.0) && approx_eq(p.y, 50.0)));
+    }
+
+    #[test]
+    fn test_clip_preserves_winding_order() {
+        let ring = vec![
+            Point::new(10.0, 10.0),
+            Point::new(90.0, 10.0),
+            Point::new(90.0, 90.0),
+            Point::new(10.0, 90.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, 0.0, 0.0, 100.0, 100.0);
+        assert!(points_approx_eq(&clipped, &ring));
+
+        let area_before = shoelace_area(&ring);
+        let area_after = shoelace_area(&clipped);
+        assert!(
+            area_before.signum() == area_after.signum(),
+            "winding order changed: before={area_before}, after={area_after}"
+        );
+    }
+
+    #[test]
+    fn test_clip_with_negative_bounds() {
+        // Given negative clip bounds (as used with CLIP_MARGIN),
+        // then a polygon fully inside is unchanged
+        let ring = vec![
+            Point::new(-2.0, -2.0),
+            Point::new(5.0, -2.0),
+            Point::new(5.0, 5.0),
+            Point::new(-2.0, 5.0),
+        ];
+        let clipped = clip_polygon_sutherland_hodgman(&ring, -4.0, -4.0, 104.0, 104.0);
+        assert!(points_approx_eq(&clipped, &ring));
     }
 }

@@ -374,7 +374,15 @@ let config = Arc::new(
 | `.with_zoom(zoom)` | Builder: set initial zoom |
 | `.set_center(lat, lon)` | Set the center position |
 | `.move_by(dlat, dlon)` | Pan by a lat/lon delta |
+| `.set_zoom(zoom)` | Set absolute zoom level (clamped to min/max) |
 | `.zoom_by(step)` | Zoom in (+) or out (-) |
+| `.zoom_at(step, col, row)` | Zoom anchored at a screen position (scroll-wheel) |
+| `.drag_start(col, row)` | Begin a drag gesture at terminal position |
+| `.drag_to(col, row)` | Continue drag to new terminal position |
+| `.drag_end()` | End the current drag gesture |
+| `.focus_position(lat, lon, zoom)` | Set center + zoom in one call |
+| `.focus_area(min_lat, min_lon, max_lat, max_lon)` | Auto-fit a bounding box to the viewport |
+| `.set_render_size(cols, rows)` | Set render area for embedded use (before first `load_visible_tiles`) |
 | `.toggle_braille()` | Toggle Braille/ASCII mode |
 | `.load_visible_tiles().await` | Fetch tiles and render to canvas |
 | `.add_marker(pos, label, color)` | Add a point marker overlay |
