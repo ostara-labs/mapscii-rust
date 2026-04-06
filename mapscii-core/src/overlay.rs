@@ -57,8 +57,14 @@ pub struct Overlay {
     pub id: OverlayId,
     /// The overlay kind/geometry.
     pub kind: OverlayKind,
-    /// Display color (xterm-256 index).
+    /// Display color (xterm-256 index). Used for markers and lines.
     pub color: ColorIdx,
+    /// Fill color for areas/polygons (xterm-256 index). `None` = no fill.
+    pub fill_color: Option<ColorIdx>,
+    /// Stroke/outline color for areas/polygons (xterm-256 index). `None` = no outline.
+    pub stroke_color: Option<ColorIdx>,
+    /// Fill opacity (0.0 = fully transparent, 1.0 = fully opaque). Default: 1.0.
+    pub fill_opacity: f64,
     /// Optional text label (for markers).
     pub label: Option<String>,
     /// Line width (for lines and area outlines).
@@ -104,53 +110,69 @@ impl OverlayCollection {
         Self::default()
     }
 
-    /// Add a marker at a position.
     pub fn add_marker(&mut self, pos: LatLon, label: Option<String>, color: ColorIdx) -> OverlayId {
         let id = next_id();
         self.overlays.push(Overlay {
             id,
             kind: OverlayKind::Marker(pos),
             color,
+            fill_color: None,
+            stroke_color: None,
+            fill_opacity: 1.0,
             label,
             line_width: 1.0,
         });
         id
     }
 
-    /// Add a polyline.
     pub fn add_line(&mut self, points: Vec<LatLon>, color: ColorIdx, line_width: f64) -> OverlayId {
         let id = next_id();
         self.overlays.push(Overlay {
             id,
             kind: OverlayKind::Line(points),
             color,
+            fill_color: None,
+            stroke_color: None,
+            fill_opacity: 1.0,
             label: None,
             line_width,
         });
         id
     }
 
-    /// Add a filled area.
-    pub fn add_area(&mut self, points: Vec<LatLon>, color: ColorIdx) -> OverlayId {
+    /// Add a filled area with separate fill and stroke colors.
+    ///
+    /// - `fill_color`: interior color (`None` = no fill)
+    /// - `stroke_color`: outline color (`None` = no outline)
+    /// - `fill_opacity`: 0.0 (transparent) to 1.0 (opaque)
+    pub fn add_area(
+        &mut self,
+        points: Vec<LatLon>,
+        fill_color: Option<ColorIdx>,
+        stroke_color: Option<ColorIdx>,
+        fill_opacity: f64,
+    ) -> OverlayId {
+        let color = fill_color.or(stroke_color).unwrap_or(0);
         let id = next_id();
         self.overlays.push(Overlay {
             id,
             kind: OverlayKind::Area(points),
             color,
+            fill_color,
+            stroke_color,
+            fill_opacity: fill_opacity.clamp(0.0, 1.0),
             label: None,
             line_width: 1.0,
         });
         id
     }
 
-    /// Add a GeoJSON layer from a string.
-    ///
-    /// Parses a GeoJSON string (FeatureCollection, Feature, or bare Geometry)
-    /// and creates an overlay containing all geometries.
     pub fn add_geojson_layer(
         &mut self,
         geojson_str: &str,
-        color: ColorIdx,
+        fill_color: Option<ColorIdx>,
+        stroke_color: Option<ColorIdx>,
+        fill_opacity: f64,
     ) -> Result<OverlayId, String> {
         let geojson: geojson::GeoJson = geojson_str
             .parse()
@@ -159,11 +181,15 @@ impl OverlayCollection {
         if geometries.is_empty() {
             return Err("no geometries found in GeoJSON".to_string());
         }
+        let color = fill_color.or(stroke_color).unwrap_or(0);
         let id = next_id();
         self.overlays.push(Overlay {
             id,
             kind: OverlayKind::GeoJson(geometries),
             color,
+            fill_color,
+            stroke_color,
+            fill_opacity: fill_opacity.clamp(0.0, 1.0),
             label: None,
             line_width: 1.0,
         });
@@ -239,22 +265,13 @@ pub fn render_overlays(
                     .map(|ll| ll_to_pixel(ll, center_lat, center_lon, zoom, width, height, config))
                     .collect();
                 if ring.len() >= 3 {
-                    canvas.polygon(&[ring], overlay.color);
+                    render_area_rings(canvas, &[ring], overlay);
                 }
             }
             OverlayKind::GeoJson(geometries) => {
                 for geom in geometries {
                     render_geojson_geometry(
-                        geom,
-                        canvas,
-                        overlay.color,
-                        overlay.line_width,
-                        center_lat,
-                        center_lon,
-                        zoom,
-                        width,
-                        height,
-                        config,
+                        geom, canvas, overlay, center_lat, center_lon, zoom, width, height, config,
                     );
                 }
             }
@@ -262,12 +279,19 @@ pub fn render_overlays(
     }
 }
 
-/// Render a single GeoJSON geometry.
+fn render_area_rings(canvas: &mut Canvas, px_rings: &[Vec<Point>], overlay: &Overlay) {
+    if let Some(fill_color) = overlay.fill_color {
+        canvas.polygon_fill(px_rings, fill_color, overlay.fill_opacity);
+    }
+    if let Some(stroke_color) = overlay.stroke_color {
+        canvas.polygon_stroke(px_rings, stroke_color, overlay.line_width);
+    }
+}
+
 fn render_geojson_geometry(
     geom: &GeoJsonGeometry,
     canvas: &mut Canvas,
-    color: ColorIdx,
-    line_width: f64,
+    overlay: &Overlay,
     center_lat: f64,
     center_lon: f64,
     zoom: f64,
@@ -281,12 +305,12 @@ fn render_geojson_geometry(
         GeoJsonGeometry::Point(pos) => {
             let p = to_px(pos);
             let marker = config.poi_marker.to_string();
-            canvas.text(&marker, p.x as i32, p.y as i32, color, true);
+            canvas.text(&marker, p.x as i32, p.y as i32, overlay.color, true);
         }
         GeoJsonGeometry::LineString(positions) => {
             let points: Vec<Point> = positions.iter().map(|ll| to_px(ll)).collect();
             if points.len() >= 2 {
-                canvas.polyline(&points, color, line_width);
+                canvas.polyline(&points, overlay.color, overlay.line_width);
             }
         }
         GeoJsonGeometry::Polygon(rings) => {
@@ -295,21 +319,21 @@ fn render_geojson_geometry(
                 .map(|ring| ring.iter().map(|ll| to_px(ll)).collect())
                 .collect();
             if !px_rings.is_empty() && px_rings[0].len() >= 3 {
-                canvas.polygon(&px_rings, color);
+                render_area_rings(canvas, &px_rings, overlay);
             }
         }
         GeoJsonGeometry::MultiPoint(positions) => {
             for pos in positions {
                 let p = to_px(pos);
                 let marker = config.poi_marker.to_string();
-                canvas.text(&marker, p.x as i32, p.y as i32, color, true);
+                canvas.text(&marker, p.x as i32, p.y as i32, overlay.color, true);
             }
         }
         GeoJsonGeometry::MultiLineString(lines) => {
             for line in lines {
                 let points: Vec<Point> = line.iter().map(|ll| to_px(ll)).collect();
                 if points.len() >= 2 {
-                    canvas.polyline(&points, color, line_width);
+                    canvas.polyline(&points, overlay.color, overlay.line_width);
                 }
             }
         }
@@ -320,7 +344,7 @@ fn render_geojson_geometry(
                     .map(|ring| ring.iter().map(|ll| to_px(ll)).collect())
                     .collect();
                 if !px_rings.is_empty() && px_rings[0].len() >= 3 {
-                    canvas.polygon(&px_rings, color);
+                    render_area_rings(canvas, &px_rings, overlay);
                 }
             }
         }
@@ -520,7 +544,7 @@ mod tests {
             LatLon::new(52.5, 13.5),
             LatLon::new(52.0, 13.5),
         ];
-        let id = col.add_area(points, 3);
+        let id = col.add_area(points, Some(3), Some(1), 0.5);
         assert_eq!(col.len(), 1);
         assert!(id > 0);
     }
@@ -551,7 +575,7 @@ mod tests {
     fn test_geojson_point() {
         let geojson_str = r#"{"type":"Point","coordinates":[13.4, 52.5]}"#;
         let mut col = OverlayCollection::new();
-        let result = col.add_geojson_layer(geojson_str, 1);
+        let result = col.add_geojson_layer(geojson_str, Some(1), None, 1.0);
         assert!(result.is_ok());
         assert_eq!(col.len(), 1);
     }
@@ -580,7 +604,7 @@ mod tests {
             ]
         }"#;
         let mut col = OverlayCollection::new();
-        let result = col.add_geojson_layer(geojson_str, 5);
+        let result = col.add_geojson_layer(geojson_str, Some(5), None, 1.0);
         assert!(result.is_ok());
         assert_eq!(col.len(), 1);
     }
@@ -588,7 +612,7 @@ mod tests {
     #[test]
     fn test_geojson_invalid() {
         let mut col = OverlayCollection::new();
-        let result = col.add_geojson_layer("not valid json", 1);
+        let result = col.add_geojson_layer("not valid json", Some(1), None, 1.0);
         assert!(result.is_err());
     }
 

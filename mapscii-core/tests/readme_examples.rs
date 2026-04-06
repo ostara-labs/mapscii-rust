@@ -55,7 +55,7 @@ fn readme_overlays() {
         LatLon::new(52.5, 13.5),
         LatLon::new(52.0, 13.5),
     ];
-    let _area_id = state.add_area(polygon, 3);
+    let _area_id = state.add_area(polygon, Some(3), Some(1), 0.7);
 
     // Remove
     state.remove_overlay(id);
@@ -82,7 +82,7 @@ fn readme_geojson() {
         ]
     }"#;
 
-    let result = state.add_geojson_layer(geojson, 5);
+    let result = state.add_geojson_layer(geojson, Some(5), Some(5), 1.0);
     assert!(result.is_ok());
 }
 

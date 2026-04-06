@@ -51,9 +51,12 @@ impl Canvas {
     /// Draw a line between two points.
     pub fn line(&mut self, from: Point, to: Point, color: ColorIdx, width: f64) {
         self.draw_line(
-            from.x as i32, from.y as i32,
-            to.x as i32, to.y as i32,
-            width, color,
+            from.x as i32,
+            from.y as i32,
+            to.x as i32,
+            to.y as i32,
+            width,
+            color,
         );
     }
 
@@ -61,9 +64,12 @@ impl Canvas {
     pub fn polyline(&mut self, points: &[Point], color: ColorIdx, width: f64) {
         for pair in points.windows(2) {
             self.draw_line(
-                pair[0].x as i32, pair[0].y as i32,
-                pair[1].x as i32, pair[1].y as i32,
-                width, color,
+                pair[0].x as i32,
+                pair[0].y as i32,
+                pair[1].x as i32,
+                pair[1].y as i32,
+                width,
+                color,
             );
         }
     }
@@ -83,6 +89,18 @@ impl Canvas {
     /// Each ring is a slice of `Point`s. The first ring is the exterior,
     /// subsequent rings are holes. Returns `true` if triangulation succeeded.
     pub fn polygon(&mut self, rings: &[Vec<Point>], color: ColorIdx) -> bool {
+        self.polygon_fill(rings, color, 1.0)
+    }
+
+    /// Fill a polygon with opacity support (ordered dithering).
+    ///
+    /// `opacity` controls pixel density: 1.0 = solid fill, 0.0 = no pixels drawn.
+    /// Uses a 4×4 Bayer matrix for visually uniform dithering.
+    pub fn polygon_fill(&mut self, rings: &[Vec<Point>], color: ColorIdx, opacity: f64) -> bool {
+        if opacity <= 0.0 {
+            return true;
+        }
+
         let mut vertices: Vec<f64> = Vec::new();
         let mut holes: Vec<usize> = Vec::new();
 
@@ -108,19 +126,48 @@ impl Canvas {
             Err(_) => return false,
         };
 
-        for tri in triangles.chunks_exact(3) {
-            let pa = [vertices[tri[0] * 2], vertices[tri[0] * 2 + 1]];
-            let pb = [vertices[tri[1] * 2], vertices[tri[1] * 2 + 1]];
-            let pc = [vertices[tri[2] * 2], vertices[tri[2] * 2 + 1]];
-            self.filled_triangle(pa, pb, pc, color);
+        if opacity >= 1.0 {
+            for tri in triangles.chunks_exact(3) {
+                let pa = [vertices[tri[0] * 2], vertices[tri[0] * 2 + 1]];
+                let pb = [vertices[tri[1] * 2], vertices[tri[1] * 2 + 1]];
+                let pc = [vertices[tri[2] * 2], vertices[tri[2] * 2 + 1]];
+                self.filled_triangle(pa, pb, pc, color);
+            }
+        } else {
+            for tri in triangles.chunks_exact(3) {
+                let pa = [vertices[tri[0] * 2], vertices[tri[0] * 2 + 1]];
+                let pb = [vertices[tri[1] * 2], vertices[tri[1] * 2 + 1]];
+                let pc = [vertices[tri[2] * 2], vertices[tri[2] * 2 + 1]];
+                self.dithered_triangle(pa, pb, pc, color, opacity);
+            }
         }
         true
+    }
+
+    /// Draw only the outline (stroke) of a polygon.
+    pub fn polygon_stroke(&mut self, rings: &[Vec<Point>], color: ColorIdx, width: f64) {
+        for ring in rings {
+            if ring.len() >= 2 {
+                self.polyline(ring, color, width);
+                if let (Some(first), Some(last)) = (ring.first(), ring.last()) {
+                    self.line(*last, *first, color, width);
+                }
+            }
+        }
     }
 
     // -- Private drawing helpers -------------------------------------------
 
     /// Bresenham line with optional width (Zingl's algorithm).
-    fn draw_line(&mut self, mut x0: i32, mut y0: i32, x1: i32, y1: i32, width: f64, color: ColorIdx) {
+    fn draw_line(
+        &mut self,
+        mut x0: i32,
+        mut y0: i32,
+        x1: i32,
+        y1: i32,
+        width: f64,
+        color: ColorIdx,
+    ) {
         let w = (width - 1.0).max(0.0);
 
         // Thin line: basic Bresenham
@@ -135,7 +182,11 @@ impl Canvas {
         let sy: i32 = if y0 < y1 { 1 } else { -1 };
 
         let mut err = dx - dy;
-        let ed = if dx + dy == 0 { 1.0 } else { ((dx * dx + dy * dy) as f64).sqrt() };
+        let ed = if dx + dy == 0 {
+            1.0
+        } else {
+            ((dx * dx + dy * dy) as f64).sqrt()
+        };
         let half_w = (w + 1.0) / 2.0;
 
         loop {
@@ -152,7 +203,9 @@ impl Canvas {
                     self.buffer.set_pixel(x0, y2, color);
                     e2 += dx;
                 }
-                if x0 == x1 { break; }
+                if x0 == x1 {
+                    break;
+                }
                 e2 = err;
                 err -= dy;
                 x0 += sx;
@@ -166,7 +219,9 @@ impl Canvas {
                     self.buffer.set_pixel(x2_inner, y0, color);
                     e2 += dy;
                 }
-                if y0 == y1 { break; }
+                if y0 == y1 {
+                    break;
+                }
                 err += dx;
                 y0 += sy;
             }
@@ -183,15 +238,21 @@ impl Canvas {
 
         loop {
             self.buffer.set_pixel(x0, y0, color);
-            if x0 == x1 && y0 == y1 { break; }
+            if x0 == x1 && y0 == y1 {
+                break;
+            }
             let e2 = 2 * err;
             if e2 >= dy {
-                if x0 == x1 { break; }
+                if x0 == x1 {
+                    break;
+                }
                 err += dy;
                 x0 += sx;
             }
             if e2 <= dx {
-                if y0 == y1 { break; }
+                if y0 == y1 {
+                    break;
+                }
                 err += dx;
                 y0 += sy;
             }
@@ -211,15 +272,21 @@ impl Canvas {
 
         loop {
             pts.push((x, y));
-            if x == bx && y == by { break; }
+            if x == bx && y == by {
+                break;
+            }
             let e2 = 2 * err;
             if e2 >= dy {
-                if x == bx { break; }
+                if x == bx {
+                    break;
+                }
                 err += dy;
                 x += sx;
             }
             if e2 <= dx {
-                if y == by { break; }
+                if y == by {
+                    break;
+                }
                 err += dx;
                 y += sy;
             }
@@ -244,7 +311,11 @@ impl Canvas {
         let height = self.height as i32;
         edge_a.retain(|&(_, y)| y >= 0 && y < height);
         edge_a.sort_by(|a, b| {
-            if a.1 == b.1 { a.0.cmp(&b.0) } else { a.1.cmp(&b.1) }
+            if a.1 == b.1 {
+                a.0.cmp(&b.0)
+            } else {
+                a.1.cmp(&b.1)
+            }
         });
 
         let mut i = 0;
@@ -267,6 +338,78 @@ impl Canvas {
                 }
             } else {
                 self.buffer.set_pixel(px, py, color);
+                break;
+            }
+
+            i += 1;
+        }
+    }
+
+    // 4×4 Bayer ordered-dithering threshold matrix (normalized to 0.0–1.0).
+    const BAYER4X4: [[f64; 4]; 4] = [
+        [0.0 / 16.0, 8.0 / 16.0, 2.0 / 16.0, 10.0 / 16.0],
+        [12.0 / 16.0, 4.0 / 16.0, 14.0 / 16.0, 6.0 / 16.0],
+        [3.0 / 16.0, 11.0 / 16.0, 1.0 / 16.0, 9.0 / 16.0],
+        [15.0 / 16.0, 7.0 / 16.0, 13.0 / 16.0, 5.0 / 16.0],
+    ];
+
+    fn dithered_triangle(
+        &mut self,
+        a: [f64; 2],
+        b: [f64; 2],
+        c: [f64; 2],
+        color: ColorIdx,
+        opacity: f64,
+    ) {
+        let ai = [a[0] as i32, a[1] as i32];
+        let bi = [b[0] as i32, b[1] as i32];
+        let ci = [c[0] as i32, c[1] as i32];
+
+        let mut edge_a = Self::bresenham_points(bi[0], bi[1], ci[0], ci[1]);
+        let edge_b = Self::bresenham_points(ai[0], ai[1], ci[0], ci[1]);
+        let edge_c = Self::bresenham_points(ai[0], ai[1], bi[0], bi[1]);
+
+        edge_a.extend_from_slice(&edge_b);
+        edge_a.extend_from_slice(&edge_c);
+
+        let height = self.height as i32;
+        edge_a.retain(|&(_, y)| y >= 0 && y < height);
+        edge_a.sort_by(|a, b| {
+            if a.1 == b.1 {
+                a.0.cmp(&b.0)
+            } else {
+                a.1.cmp(&b.1)
+            }
+        });
+
+        let mut i = 0;
+        while i < edge_a.len() {
+            let (px, py) = edge_a[i];
+            let next = edge_a.get(i + 1);
+
+            if let Some(&(nx, ny)) = next {
+                if py == ny {
+                    let left = px.max(0);
+                    let right = nx.min(self.width as i32 - 1);
+                    if left >= 0 && right < self.width as i32 {
+                        for x in left..=right {
+                            let threshold = Self::BAYER4X4[(py as usize) & 3][(x as usize) & 3];
+                            if opacity > threshold {
+                                self.buffer.set_pixel(x, py, color);
+                            }
+                        }
+                    }
+                } else {
+                    let threshold = Self::BAYER4X4[(py as usize) & 3][(px as usize) & 3];
+                    if opacity > threshold {
+                        self.buffer.set_pixel(px, py, color);
+                    }
+                }
+            } else {
+                let threshold = Self::BAYER4X4[(py as usize) & 3][(px as usize) & 3];
+                if opacity > threshold {
+                    self.buffer.set_pixel(px, py, color);
+                }
                 break;
             }
 

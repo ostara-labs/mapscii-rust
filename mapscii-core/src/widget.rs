@@ -310,20 +310,28 @@ impl MapState {
         self.overlays.add_line(points, color, line_width)
     }
 
-    /// Add a filled area.
-    pub fn add_area(&mut self, points: Vec<LatLon>, color: ColorIdx) -> OverlayId {
+    /// Add a filled area with separate fill and stroke colors.
+    pub fn add_area(
+        &mut self,
+        points: Vec<LatLon>,
+        fill_color: Option<ColorIdx>,
+        stroke_color: Option<ColorIdx>,
+        fill_opacity: f64,
+    ) -> OverlayId {
         self.needs_redraw = true;
-        self.overlays.add_area(points, color)
+        self.overlays.add_area(points, fill_color, stroke_color, fill_opacity)
     }
 
     /// Add a GeoJSON layer.
     pub fn add_geojson_layer(
         &mut self,
         geojson_str: &str,
-        color: ColorIdx,
+        fill_color: Option<ColorIdx>,
+        stroke_color: Option<ColorIdx>,
+        fill_opacity: f64,
     ) -> Result<OverlayId, String> {
         self.needs_redraw = true;
-        self.overlays.add_geojson_layer(geojson_str, color)
+        self.overlays.add_geojson_layer(geojson_str, fill_color, stroke_color, fill_opacity)
     }
 
     /// Remove an overlay by ID.
