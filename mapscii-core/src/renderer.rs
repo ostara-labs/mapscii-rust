@@ -330,6 +330,14 @@ impl Renderer {
                     .iter()
                     .map(|ring| self.scale_and_reduce(vt, ring, scale, false))
                     .collect();
+
+                if let Some(outer) = scaled_rings.first() {
+                    if self.fill_covers_viewport(outer) {
+                        self.canvas.set_background(feature.color);
+                        return;
+                    }
+                }
+
                 self.canvas.polygon(&scaled_rings, feature.color);
             }
             "symbol" => {
@@ -404,6 +412,25 @@ impl Renderer {
             }
             _ => {}
         }
+    }
+
+    fn fill_covers_viewport(&self, ring: &[Point]) -> bool {
+        if ring.len() < 3 {
+            return false;
+        }
+        let mut min_x = f64::MAX;
+        let mut min_y = f64::MAX;
+        let mut max_x = f64::MIN;
+        let mut max_y = f64::MIN;
+        for p in ring {
+            min_x = min_x.min(p.x);
+            min_y = min_y.min(p.y);
+            max_x = max_x.max(p.x);
+            max_y = max_y.max(p.y);
+        }
+        let w = self.width as f64;
+        let h = self.height as f64;
+        min_x <= 0.0 && min_y <= 0.0 && max_x >= w && max_y >= h
     }
 
     /// Scale tile coordinates to viewport pixel coordinates and remove duplicates.
