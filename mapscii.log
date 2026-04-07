@@ -1,0 +1,340 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.30s
+     Running `target/debug/mapscii`
+[2026-04-07T15:54:29Z DEBUG mapscii_core::renderer] [renderer] zoom=0.50 visible_tiles=3
+[2026-04-07T15:54:29Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=109 fills=30 labels=0 line_budget_left=3921
+[2026-04-07T15:54:29Z DEBUG mapscii_core::renderer] [renderer] frame=60ms fetch=6ms features=0ms render=52ms tiles=3
+[2026-04-07T15:54:31Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=6
+[2026-04-07T15:54:31Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=416 fills=139 labels=62 line_budget_left=3723
+[2026-04-07T15:54:31Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 45 pixels
+[2026-04-07T15:54:31Z DEBUG mapscii_core::renderer] [renderer] frame=190ms fetch=154ms features=1ms render=33ms tiles=6
+[2026-04-07T15:54:33Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=6
+[2026-04-07T15:54:33Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=416 fills=139 labels=62 line_budget_left=3723
+[2026-04-07T15:54:33Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 45 pixels
+[2026-04-07T15:54:33Z DEBUG mapscii_core::renderer] [renderer] frame=35ms fetch=0ms features=1ms render=33ms tiles=6
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=437 fills=153 labels=64 line_budget_left=3716
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 95 pixels
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] frame=39ms fetch=0ms features=1ms render=38ms tiles=4
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=437 fills=155 labels=64 line_budget_left=3718
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 116 pixels
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] frame=39ms fetch=0ms features=1ms render=37ms tiles=4
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=442 fills=159 labels=64 line_budget_left=3717
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 112 pixels
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] frame=39ms fetch=0ms features=1ms render=37ms tiles=4
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=432 fills=161 labels=60 line_budget_left=3729
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 107 pixels
+[2026-04-07T15:54:34Z DEBUG mapscii_core::renderer] [renderer] frame=38ms fetch=0ms features=1ms render=36ms tiles=4
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=2
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=388 fills=141 labels=24 line_budget_left=3753
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 67 pixels
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] frame=41ms fetch=0ms features=1ms render=39ms tiles=2
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=2
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=392 fills=145 labels=24 line_budget_left=3753
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 67 pixels
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] frame=39ms fetch=0ms features=1ms render=36ms tiles=2
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=2
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=388 fills=141 labels=24 line_budget_left=3753
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 67 pixels
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] frame=42ms fetch=0ms features=2ms render=40ms tiles=2
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=435 fills=165 labels=56 line_budget_left=3730
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:35Z DEBUG mapscii_core::renderer] [renderer] frame=46ms fetch=0ms features=1ms render=44ms tiles=4
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=431 fills=162 labels=56 line_budget_left=3731
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] frame=40ms fetch=0ms features=1ms render=39ms tiles=4
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=431 fills=162 labels=56 line_budget_left=3731
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:36Z DEBUG mapscii_core::renderer] [renderer] frame=36ms fetch=0ms features=1ms render=34ms tiles=4
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=435 fills=165 labels=56 line_budget_left=3730
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] frame=37ms fetch=0ms features=1ms render=35ms tiles=4
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=440 fills=173 labels=56 line_budget_left=3733
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 125 pixels
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] frame=39ms fetch=0ms features=1ms render=37ms tiles=4
+[2026-04-07T15:54:37Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=6
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=443 fills=176 labels=64 line_budget_left=3733
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 127 pixels
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] frame=60ms fetch=19ms features=1ms render=39ms tiles=6
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=3
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=417 fills=159 labels=30 line_budget_left=3742
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 111 pixels
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] frame=39ms fetch=0ms features=1ms render=37ms tiles=3
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=440 fills=173 labels=56 line_budget_left=3733
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 125 pixels
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] frame=41ms fetch=0ms features=1ms render=39ms tiles=4
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=436 fills=167 labels=56 line_budget_left=3731
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] frame=37ms fetch=0ms features=1ms render=35ms tiles=4
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=436 fills=166 labels=56 line_budget_left=3730
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:38Z DEBUG mapscii_core::renderer] [renderer] frame=39ms fetch=0ms features=1ms render=36ms tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=431 fills=162 labels=56 line_budget_left=3731
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] frame=40ms fetch=0ms features=1ms render=39ms tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=432 fills=162 labels=60 line_budget_left=3730
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 113 pixels
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] frame=37ms fetch=0ms features=1ms render=36ms tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=431 fills=162 labels=56 line_budget_left=3731
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] frame=38ms fetch=0ms features=2ms render=36ms tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=431 fills=162 labels=56 line_budget_left=3731
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 115 pixels
+[2026-04-07T15:54:39Z DEBUG mapscii_core::renderer] [renderer] frame=41ms fetch=0ms features=1ms render=39ms tiles=4
+[2026-04-07T15:54:42Z DEBUG mapscii_core::renderer] [renderer] zoom=2.00 visible_tiles=4
+[2026-04-07T15:54:42Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=660 fills=255 labels=76 line_budget_left=3595
+[2026-04-07T15:54:42Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 122 pixels
+[2026-04-07T15:54:42Z DEBUG mapscii_core::renderer] [renderer] frame=102ms fetch=0ms features=4ms render=97ms tiles=4
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] zoom=2.10 visible_tiles=4
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=630 fills=220 labels=68 line_budget_left=3590
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 43 pixels
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] frame=62ms fetch=0ms features=2ms render=59ms tiles=4
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] zoom=2.30 visible_tiles=4
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=566 fills=173 labels=56 line_budget_left=3607
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 54 pixels
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] frame=61ms fetch=0ms features=1ms render=59ms tiles=4
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] zoom=2.40 visible_tiles=4
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=518 fills=158 labels=56 line_budget_left=3640
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 75 pixels
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] frame=65ms fetch=0ms features=1ms render=63ms tiles=4
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] zoom=2.50 visible_tiles=2
+[2026-04-07T15:54:50Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=468 fills=134 labels=28 line_budget_left=3666
+[2026-04-07T15:54:51Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 97 pixels
+[2026-04-07T15:54:51Z DEBUG mapscii_core::renderer] [renderer] frame=73ms fetch=0ms features=1ms render=71ms tiles=2
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] zoom=2.70 visible_tiles=2
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=413 fills=125 labels=26 line_budget_left=3712
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 56 pixels
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] frame=95ms fetch=0ms features=1ms render=93ms tiles=2
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] zoom=2.80 visible_tiles=2
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=393 fills=119 labels=24 line_budget_left=3726
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 69 pixels
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] frame=98ms fetch=0ms features=1ms render=97ms tiles=2
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] zoom=2.90 visible_tiles=2
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=345 fills=98 labels=24 line_budget_left=3753
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 2, x: 1, y: 1 }: filled 30 pixels
+[2026-04-07T15:54:52Z DEBUG mapscii_core::renderer] [renderer] frame=102ms fetch=0ms features=1ms render=100ms tiles=2
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] zoom=3.00 visible_tiles=4
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=403 fills=120 labels=184 line_budget_left=3717
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 154 pixels
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] frame=143ms fetch=72ms features=1ms render=69ms tiles=4
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] zoom=3.10 visible_tiles=4
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=365 fills=107 labels=174 line_budget_left=3742
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 127 pixels
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] frame=73ms fetch=0ms features=1ms render=71ms tiles=4
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] zoom=3.20 visible_tiles=4
+[2026-04-07T15:54:53Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=326 fills=93 labels=160 line_budget_left=3767
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 88 pixels
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] frame=80ms fetch=0ms features=1ms render=78ms tiles=4
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] zoom=3.30 visible_tiles=4
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=299 fills=82 labels=152 line_budget_left=3783
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 111 pixels
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] frame=84ms fetch=0ms features=1ms render=82ms tiles=4
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] zoom=3.40 visible_tiles=4
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=264 fills=70 labels=148 line_budget_left=3806
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 95 pixels
+[2026-04-07T15:54:54Z DEBUG mapscii_core::renderer] [renderer] frame=83ms fetch=0ms features=1ms render=81ms tiles=4
+[2026-04-07T15:54:55Z DEBUG mapscii_core::renderer] [renderer] zoom=3.50 visible_tiles=4
+[2026-04-07T15:54:55Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=238 fills=65 labels=124 line_budget_left=3827
+[2026-04-07T15:54:55Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 45 pixels
+[2026-04-07T15:54:55Z DEBUG mapscii_core::renderer] [renderer] frame=89ms fetch=0ms features=1ms render=88ms tiles=4
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] zoom=3.70 visible_tiles=4
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=186 fills=40 labels=88 line_budget_left=3854
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 22 pixels
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] frame=107ms fetch=0ms features=1ms render=105ms tiles=4
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] zoom=3.80 visible_tiles=4
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=156 fills=37 labels=76 line_budget_left=3881
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 65 pixels
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] frame=113ms fetch=0ms features=0ms render=111ms tiles=4
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] zoom=3.90 visible_tiles=4
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=136 fills=30 labels=68 line_budget_left=3894
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 33 pixels
+[2026-04-07T15:54:56Z DEBUG mapscii_core::renderer] [renderer] frame=111ms fetch=0ms features=1ms render=109ms tiles=4
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] zoom=4.20 visible_tiles=4
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=242 fills=38 labels=64 line_budget_left=3796
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 15 pixels
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] frame=124ms fetch=74ms features=0ms render=49ms tiles=4
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] zoom=4.40 visible_tiles=4
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=193 fills=31 labels=48 line_budget_left=3838
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 51 pixels
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] frame=60ms fetch=0ms features=0ms render=59ms tiles=4
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] zoom=4.50 visible_tiles=4
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=168 fills=30 labels=48 line_budget_left=3862
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 35 pixels
+[2026-04-07T15:54:59Z DEBUG mapscii_core::renderer] [renderer] frame=67ms fetch=0ms features=0ms render=66ms tiles=4
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] zoom=4.40 visible_tiles=4
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=193 fills=31 labels=48 line_budget_left=3838
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 51 pixels
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] frame=63ms fetch=0ms features=0ms render=62ms tiles=4
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] zoom=4.30 visible_tiles=4
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=219 fills=35 labels=48 line_budget_left=3816
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 97 pixels
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] frame=56ms fetch=0ms features=0ms render=54ms tiles=4
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] zoom=4.20 visible_tiles=4
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=242 fills=38 labels=64 line_budget_left=3796
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 15 pixels
+[2026-04-07T15:55:01Z DEBUG mapscii_core::renderer] [renderer] frame=64ms fetch=0ms features=1ms render=63ms tiles=4
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] zoom=4.30 visible_tiles=4
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=219 fills=35 labels=48 line_budget_left=3816
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 97 pixels
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] frame=61ms fetch=0ms features=1ms render=59ms tiles=4
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] zoom=4.40 visible_tiles=4
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=193 fills=31 labels=48 line_budget_left=3838
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 51 pixels
+[2026-04-07T15:55:02Z DEBUG mapscii_core::renderer] [renderer] frame=60ms fetch=0ms features=0ms render=58ms tiles=4
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] zoom=4.50 visible_tiles=4
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=168 fills=30 labels=48 line_budget_left=3862
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 35 pixels
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] frame=68ms fetch=0ms features=0ms render=66ms tiles=4
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] zoom=4.60 visible_tiles=2
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=147 fills=28 labels=22 line_budget_left=3881
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 102 pixels
+[2026-04-07T15:55:03Z DEBUG mapscii_core::renderer] [renderer] frame=65ms fetch=0ms features=0ms render=64ms tiles=2
+[2026-04-07T15:55:04Z DEBUG mapscii_core::renderer] [renderer] zoom=5.10 visible_tiles=4
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=2200 fills=542 labels=48 line_budget_left=2342
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 322 pixels
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] frame=4626ms fetch=4530ms features=16ms render=79ms tiles=4
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] zoom=5.40 visible_tiles=4
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1778 fills=379 labels=36 line_budget_left=2601
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 304 pixels
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] frame=88ms fetch=0ms features=13ms render=75ms tiles=4
+[2026-04-07T15:55:09Z DEBUG mapscii_core::renderer] [renderer] zoom=6.20 visible_tiles=6
+[2026-04-07T15:55:12Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1664 fills=557 labels=110 line_budget_left=2893
+[2026-04-07T15:55:12Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 6, x: 31, y: 22 }: filled 229 pixels
+[2026-04-07T15:55:12Z DEBUG mapscii_core::renderer] [renderer] frame=3054ms fetch=2948ms features=10ms render=94ms tiles=6
+[2026-04-07T15:55:12Z DEBUG mapscii_core::renderer] [renderer] zoom=5.20 visible_tiles=4
+[2026-04-07T15:55:12Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=2038 fills=429 labels=30 line_budget_left=2391
+[2026-04-07T15:55:12Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 208 pixels
+[2026-04-07T15:55:12Z DEBUG mapscii_core::renderer] [renderer] frame=79ms fetch=0ms features=11ms render=67ms tiles=4
+[2026-04-07T15:55:14Z DEBUG mapscii_core::renderer] [renderer] zoom=5.20 visible_tiles=4
+[2026-04-07T15:55:14Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=2201 fills=508 labels=48 line_budget_left=2307
+[2026-04-07T15:55:15Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 365 pixels
+[2026-04-07T15:55:15Z DEBUG mapscii_core::renderer] [renderer] frame=105ms fetch=0ms features=18ms render=86ms tiles=4
+[2026-04-07T15:55:15Z DEBUG mapscii_core::renderer] [renderer] zoom=5.20 visible_tiles=4
+[2026-04-07T15:55:15Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=2195 fills=507 labels=56 line_budget_left=2312
+[2026-04-07T15:55:15Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 363 pixels
+[2026-04-07T15:55:15Z DEBUG mapscii_core::renderer] [renderer] frame=102ms fetch=0ms features=16ms render=85ms tiles=4
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] zoom=5.20 visible_tiles=6
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1668 fills=425 labels=62 line_budget_left=2757
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 10 }: filled 59 pixels
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 333 pixels
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] frame=125ms fetch=3ms features=21ms render=100ms tiles=6
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] zoom=5.20 visible_tiles=6
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1598 fills=403 labels=58 line_budget_left=2805
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 10 }: filled 107 pixels
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 328 pixels
+[2026-04-07T15:55:17Z DEBUG mapscii_core::renderer] [renderer] frame=102ms fetch=0ms features=13ms render=89ms tiles=6
+[2026-04-07T15:55:18Z DEBUG mapscii_core::renderer] [renderer] zoom=5.30 visible_tiles=4
+[2026-04-07T15:55:18Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1590 fills=371 labels=52 line_budget_left=2781
+[2026-04-07T15:55:18Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 10 }: filled 63 pixels
+[2026-04-07T15:55:18Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 296 pixels
+[2026-04-07T15:55:18Z DEBUG mapscii_core::renderer] [renderer] frame=109ms fetch=0ms features=12ms render=96ms tiles=4
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] zoom=5.40 visible_tiles=4
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1469 fills=333 labels=50 line_budget_left=2864
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 10 }: filled 74 pixels
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 371 pixels
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] frame=116ms fetch=0ms features=12ms render=104ms tiles=4
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] zoom=5.70 visible_tiles=4
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1191 fills=222 labels=32 line_budget_left=3031
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 368 pixels
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] frame=138ms fetch=0ms features=6ms render=131ms tiles=4
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] zoom=5.80 visible_tiles=4
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1065 fills=193 labels=24 line_budget_left=3128
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 455 pixels
+[2026-04-07T15:55:21Z DEBUG mapscii_core::renderer] [renderer] frame=123ms fetch=0ms features=5ms render=117ms tiles=4
+[2026-04-07T15:55:27Z DEBUG mapscii_core::renderer] [renderer] zoom=6.00 visible_tiles=6
+[2026-04-07T15:55:30Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1694 fills=530 labels=168 line_budget_left=2836
+[2026-04-07T15:55:30Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 6, x: 31, y: 22 }: filled 457 pixels
+[2026-04-07T15:55:30Z DEBUG mapscii_core::renderer] [renderer] frame=2924ms fetch=2850ms features=14ms render=59ms tiles=6
+[2026-04-07T15:55:30Z DEBUG mapscii_core::renderer] [renderer] zoom=6.30 visible_tiles=6
+[2026-04-07T15:55:30Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1350 fills=353 labels=146 line_budget_left=3003
+[2026-04-07T15:55:30Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 6, x: 31, y: 22 }: filled 395 pixels
+[2026-04-07T15:55:30Z DEBUG mapscii_core::renderer] [renderer] frame=87ms fetch=0ms features=13ms render=73ms tiles=6
+[2026-04-07T15:55:34Z DEBUG mapscii_core::renderer] [renderer] zoom=6.20 visible_tiles=6
+[2026-04-07T15:55:34Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1445 fills=378 labels=150 line_budget_left=2933
+[2026-04-07T15:55:34Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 6, x: 31, y: 22 }: filled 532 pixels
+[2026-04-07T15:55:34Z DEBUG mapscii_core::renderer] [renderer] frame=85ms fetch=0ms features=14ms render=70ms tiles=6
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] zoom=6.10 visible_tiles=6
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1587 fills=474 labels=166 line_budget_left=2887
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 6, x: 31, y: 22 }: filled 472 pixels
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] frame=91ms fetch=0ms features=16ms render=75ms tiles=6
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] zoom=6.00 visible_tiles=6
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1694 fills=530 labels=168 line_budget_left=2836
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 6, x: 31, y: 22 }: filled 457 pixels
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] frame=86ms fetch=0ms features=16ms render=68ms tiles=6
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] zoom=5.90 visible_tiles=4
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=977 fills=175 labels=20 line_budget_left=3198
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 438 pixels
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] frame=175ms fetch=0ms features=5ms render=169ms tiles=4
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] zoom=5.80 visible_tiles=4
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1065 fills=193 labels=24 line_budget_left=3128
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 455 pixels
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] frame=127ms fetch=0ms features=6ms render=121ms tiles=4
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] zoom=5.60 visible_tiles=4
+[2026-04-07T15:55:35Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1288 fills=253 labels=32 line_budget_left=2965
+[2026-04-07T15:55:36Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 431 pixels
+[2026-04-07T15:55:36Z DEBUG mapscii_core::renderer] [renderer] frame=141ms fetch=0ms features=8ms render=133ms tiles=4
+[2026-04-07T15:55:36Z DEBUG mapscii_core::renderer] [renderer] zoom=5.50 visible_tiles=4
+[2026-04-07T15:55:36Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1407 fills=298 labels=40 line_budget_left=2891
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 371 pixels
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] frame=122ms fetch=0ms features=11ms render=110ms tiles=4
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] zoom=5.30 visible_tiles=4
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1590 fills=371 labels=52 line_budget_left=2781
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 10 }: filled 63 pixels
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 296 pixels
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] frame=103ms fetch=0ms features=12ms render=91ms tiles=4
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] zoom=5.10 visible_tiles=6
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1636 fills=449 labels=70 line_budget_left=2813
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 10 }: filled 85 pixels
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 290 pixels
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] frame=97ms fetch=0ms features=13ms render=83ms tiles=6
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] zoom=5.00 visible_tiles=6
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=1711 fills=510 labels=80 line_budget_left=2799
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 10 }: filled 78 pixels
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 5, x: 15, y: 11 }: filled 278 pixels
+[2026-04-07T15:55:37Z DEBUG mapscii_core::renderer] [renderer] frame=101ms fetch=0ms features=15ms render=85ms tiles=6
+[2026-04-07T15:55:38Z DEBUG mapscii_core::renderer] [renderer] zoom=4.90 visible_tiles=2
+[2026-04-07T15:55:38Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=88 fills=20 labels=10 line_budget_left=3932
+[2026-04-07T15:55:38Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 82 pixels
+[2026-04-07T15:55:38Z DEBUG mapscii_core::renderer] [renderer] frame=135ms fetch=0ms features=0ms render=134ms tiles=2
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] zoom=4.70 visible_tiles=2
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=128 fills=25 labels=14 line_budget_left=3897
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 67 pixels
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] frame=96ms fetch=0ms features=0ms render=95ms tiles=2
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] zoom=4.60 visible_tiles=2
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=151 fills=30 labels=16 line_budget_left=3879
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 51 pixels
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] frame=71ms fetch=0ms features=0ms render=70ms tiles=2
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] zoom=4.50 visible_tiles=2
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=167 fills=32 labels=22 line_budget_left=3865
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 35 pixels
+[2026-04-07T15:55:39Z DEBUG mapscii_core::renderer] [renderer] frame=68ms fetch=0ms features=0ms render=67ms tiles=2
+[2026-04-07T15:55:40Z DEBUG mapscii_core::renderer] [renderer] zoom=4.40 visible_tiles=2
+[2026-04-07T15:55:40Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=182 fills=34 labels=26 line_budget_left=3852
+[2026-04-07T15:55:40Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 116 pixels
+[2026-04-07T15:55:40Z DEBUG mapscii_core::renderer] [renderer] frame=62ms fetch=0ms features=0ms render=61ms tiles=2
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] zoom=4.00 visible_tiles=6
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=298 fills=60 labels=68 line_budget_left=3762
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 4, x: 7, y: 5 }: filled 83 pixels
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] frame=63ms fetch=6ms features=1ms render=54ms tiles=6
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] zoom=3.80 visible_tiles=4
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=147 fills=33 labels=76 line_budget_left=3886
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 29 pixels
+[2026-04-07T15:55:41Z DEBUG mapscii_core::renderer] [renderer] frame=81ms fetch=0ms features=0ms render=80ms tiles=4
+[2026-04-07T15:55:43Z DEBUG mapscii_core::renderer] [renderer] zoom=3.00 visible_tiles=4
+[2026-04-07T15:55:43Z DEBUG mapscii_core::renderer] [renderer] render_tiles drawn=406 fills=127 labels=194 line_budget_left=3721
+[2026-04-07T15:55:43Z DEBUG mapscii_core::renderer] [renderer] bridge-fill tile TileKey { z: 3, x: 3, y: 2 }: filled 164 pixels
+[2026-04-07T15:55:43Z DEBUG mapscii_core::renderer] [renderer] frame=72ms fetch=0ms features=1ms render=70ms tiles=4

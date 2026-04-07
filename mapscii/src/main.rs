@@ -14,7 +14,7 @@ use crossterm::terminal::{
     disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
 };
 use crossterm::ExecutableCommand;
-use ratatui::layout::{Constraint, Direction, Layout};
+use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Style};
 use ratatui::text::Span;
 use ratatui::widgets::Paragraph;
@@ -69,6 +69,12 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Initialize logging — output goes to stderr so it doesn't corrupt the TUI.
+    // Usage: RUST_LOG=debug cargo run 2>mapscii.log
+    env_logger::Builder::from_default_env()
+        .target(env_logger::Target::Stderr)
+        .init();
+
     let args = Args::parse();
 
     // Build config from CLI args
@@ -115,6 +121,47 @@ async fn main() -> Result<()> {
 }
 
 // ---------------------------------------------------------------------------
+// Frame rendering
+// ---------------------------------------------------------------------------
+
+fn draw_frame(
+    terminal: &mut Terminal<ratatui::backend::CrosstermBackend<io::Stdout>>,
+    state: &mut MapState,
+) -> Result<()> {
+    terminal.draw(|frame| {
+        let chunks = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Min(1), Constraint::Length(1)])
+            .split(frame.area());
+
+        let map_area = chunks[0];
+        frame.render_stateful_widget(MapWidget::new(), map_area, state);
+
+        if let Some(ref msg) = state.loading_status {
+            let overlay = Paragraph::new(Span::styled(
+                format!(" {msg} "),
+                Style::default().fg(Color::Black).bg(Color::DarkGray),
+            ));
+            let overlay_area = Rect {
+                x: map_area.x,
+                y: map_area.y,
+                width: (msg.len() as u16 + 2).min(map_area.width),
+                height: 1,
+            };
+            frame.render_widget(overlay, overlay_area);
+        }
+
+        let status = state.status_text();
+        let status_bar = Paragraph::new(Span::styled(
+            format!(" {status}  [arrows: move | a/z: zoom | c: braille | d: dump | q: quit]"),
+            Style::default().fg(Color::DarkGray),
+        ));
+        frame.render_widget(status_bar, chunks[1]);
+    })?;
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
 // App loop
 // ---------------------------------------------------------------------------
 
@@ -128,26 +175,13 @@ async fn run_app(
 
     loop {
         if pending_reload && last_navigation.elapsed() >= Duration::from_millis(DEBOUNCE_MS) {
+            state.loading_status = Some("Loading tiles…".into());
+            draw_frame(terminal, state)?;
             state.load_visible_tiles().await;
             pending_reload = false;
         }
         
-        terminal.draw(|frame| {
-            let chunks = Layout::default()
-                .direction(Direction::Vertical)
-                .constraints([Constraint::Min(1), Constraint::Length(1)])
-                .split(frame.area());
-
-            let map_area = chunks[0];
-            frame.render_stateful_widget(MapWidget::new(), map_area, state);
-
-            let status = state.status_text();
-            let status_bar = Paragraph::new(Span::styled(
-                format!(" {status}  [arrows: move | a/z: zoom | c: braille | q: quit]"),
-                Style::default().fg(Color::DarkGray),
-            ));
-            frame.render_widget(status_bar, chunks[1]);
-        })?;
+        draw_frame(terminal, state)?;
 
         if event::poll(Duration::from_millis(50))? {
             match event::read()? {
@@ -191,6 +225,24 @@ async fn run_app(
                         }
                         KeyCode::Char('c') => {
                             state.toggle_braille();
+                        }
+                        KeyCode::Char('d') => {
+                            let ts = std::time::SystemTime::now()
+                                .duration_since(std::time::UNIX_EPOCH)
+                                .unwrap_or_default()
+                                .as_millis();
+                            let path = format!("/tmp/mapscii-dump-{ts}.json");
+                            match state.dump_frame(&path) {
+                                Ok(_) => {
+                                    state.loading_status = Some(format!("Frame dumped to {path}"));
+                                    draw_frame(terminal, state)?;
+                                    tokio::time::sleep(Duration::from_secs(1)).await;
+                                    state.loading_status = None;
+                                }
+                                Err(e) => {
+                                    log::error!("Frame dump failed: {e}");
+                                }
+                            }
                         }
                         _ => {}
                     }

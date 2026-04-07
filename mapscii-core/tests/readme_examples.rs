@@ -94,8 +94,8 @@ fn readme_navigation() {
 
     state.set_center(40.7128, -74.0060);
     state.move_by(1.0, 0.0);
-    state.zoom_by(0.2);
-    state.zoom_by(-0.2);
+    state.zoom_by(0.1);
+    state.zoom_by(-0.1);
     state.toggle_braille();
     let _ = state.status_text();
 }

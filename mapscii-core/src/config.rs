@@ -123,7 +123,7 @@ impl Default for MapConfig {
             mbtiles_path: None,
             initial_zoom: None,
             max_zoom: 18,
-            zoom_step: 0.2,
+            zoom_step: 0.1,
             initial_lat: 52.51298,
             initial_lon: 13.42012,
             simplify_polylines: false,

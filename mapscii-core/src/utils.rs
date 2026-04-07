@@ -12,7 +12,17 @@ pub fn clamp(num: f64, min: f64, max: f64) -> f64 {
     num.clamp(min, max)
 }
 
-/// Compute the integer tile zoom from a fractional zoom, clamped to `[0, tile_range]`.
+/// Compute the integer tile zoom used for fetching tiles, clamped to `[0, tile_range]`.
+///
+/// Uses `floor()` so that z2.x always fetches z2 tiles, z3.x fetches z3 tiles,
+/// etc. The tile data only changes at integer boundaries — within a given
+/// integer band the renderer just scales the same tile polygons up via
+/// `tilesize_at_zoom()`. This keeps coastline shapes stable across an entire
+/// zoom band and avoids mid-band data cliffs.
+///
+/// **Terminology**:
+/// - *display zoom* (`zoom: f64`): the fractional zoom the user sees (e.g. 2.7).
+/// - *tile zoom* (return value): the integer zoom used to address tiles (e.g. 2).
 #[inline]
 pub fn base_zoom(zoom: f64, config: &MapConfig) -> u8 {
     let z = zoom.floor() as i32;

@@ -197,11 +197,11 @@ async fn main() -> anyhow::Result<()> {
                     match key.code {
                         KeyCode::Char('q') => break,
                         KeyCode::Char('a') => {
-                            state.zoom_by(0.2);
+                            state.zoom_by(0.1);
                             state.load_visible_tiles().await;
                         }
                         KeyCode::Char('z') => {
-                            state.zoom_by(-0.2);
+                            state.zoom_by(-0.1);
                             state.load_visible_tiles().await;
                         }
                         KeyCode::Up => {
@@ -353,7 +353,7 @@ let config = Arc::new(
 | `mbtiles_path` | `Option<String>` | `None` | Path to `.mbtiles` file |
 | `initial_zoom` | `Option<f64>` | `None` | Initial zoom (auto if `None`) |
 | `max_zoom` | `u8` | `18` | Maximum zoom level |
-| `zoom_step` | `f64` | `0.2` | Zoom increment per step |
+| `zoom_step` | `f64` | `0.1` | Zoom increment per step |
 | `initial_lat` | `f64` | `52.51298` | Initial latitude |
 | `initial_lon` | `f64` | `13.42012` | Initial longitude |
 | `use_braille` | `bool` | `true` | Braille vs ASCII rendering |

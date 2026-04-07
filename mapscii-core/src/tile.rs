@@ -242,6 +242,8 @@ pub struct TileFeature {
     pub label: Option<String>,
     /// Sort order (localrank or scalerank).
     pub sort: Option<i64>,
+    /// Feature class from vector tile properties (e.g. "ocean", "river", "lake").
+    pub class: Option<String>,
     /// The geometry points (for line/symbol: single ring; for fill: multiple rings).
     pub points: Vec<Vec<TilePoint>>,
     /// Bounding box for spatial indexing.
@@ -397,6 +399,11 @@ impl Tile {
 
                 // For fill features, all rings go into one feature (like the JS original).
                 // For line/symbol features, each ring is a separate feature.
+                let class = properties
+                    .get("class")
+                    .and_then(|v| v.as_str())
+                    .map(String::from);
+
                 if style.layer_type == "fill" {
                     if let Some(feature) = make_feature_fill(
                         name,
@@ -405,6 +412,7 @@ impl Tile {
                         line_width,
                         label.clone(),
                         sort,
+                        class,
                         &geometries,
                     ) {
                         features.push(feature);
@@ -418,6 +426,7 @@ impl Tile {
                             line_width,
                             label.clone(),
                             sort,
+                            class.clone(),
                             ring,
                         ) {
                             features.push(feature);
@@ -523,7 +532,6 @@ fn compute_bbox(points: &[TilePoint]) -> (i32, i32, i32, i32) {
     (min_x, max_x, min_y, max_y)
 }
 
-/// Create a fill feature (multiple rings, bbox from outer ring).
 fn make_feature_fill(
     layer_name: &str,
     style: &crate::styler::StyleLayer,
@@ -531,12 +539,12 @@ fn make_feature_fill(
     line_width: f64,
     label: Option<String>,
     sort: Option<i64>,
+    class: Option<String>,
     geometries: &[Vec<TilePoint>],
 ) -> Option<TileFeature> {
     if geometries.is_empty() {
         return None;
     }
-    // Bbox from outer ring (first ring)
     let (min_x, max_x, min_y, max_y) = compute_bbox(&geometries[0]);
 
     Some(TileFeature {
@@ -549,6 +557,7 @@ fn make_feature_fill(
         line_width,
         label,
         sort,
+        class,
         points: geometries.to_vec(),
         min_x,
         max_x,
@@ -557,7 +566,6 @@ fn make_feature_fill(
     })
 }
 
-/// Create a line/symbol feature (single ring).
 fn make_feature_single(
     layer_name: &str,
     style: &crate::styler::StyleLayer,
@@ -565,6 +573,7 @@ fn make_feature_single(
     line_width: f64,
     label: Option<String>,
     sort: Option<i64>,
+    class: Option<String>,
     ring: &[TilePoint],
 ) -> Option<TileFeature> {
     if ring.is_empty() {
@@ -582,6 +591,7 @@ fn make_feature_single(
         line_width,
         label,
         sort,
+        class,
         points: vec![ring.to_vec()],
         min_x,
         max_x,

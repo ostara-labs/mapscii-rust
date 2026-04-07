@@ -64,6 +64,9 @@ pub struct MapState {
     last_area: Option<(u16, u16)>,
     /// Active drag anchor: (start_col, start_row, start_lat, start_lon).
     drag_anchor: Option<(f64, f64, f64, f64)>,
+    /// Current loading/rendering status message, if any.
+    /// Set during `load_visible_tiles` for progress display.
+    pub loading_status: Option<String>,
 }
 
 impl MapState {
@@ -92,6 +95,7 @@ impl MapState {
             needs_redraw: true,
             last_area: None,
             drag_anchor: None,
+            loading_status: None,
         }
     }
 
@@ -127,9 +131,9 @@ impl MapState {
 
     /// Zoom by a step amount (+ve = zoom in, -ve = zoom out).
     pub fn zoom_by(&mut self, step: f64) {
-        let new_zoom = self.zoom + step;
+        let new_zoom = ((self.zoom + step) * 10.0).round() / 10.0;
         if new_zoom < self.min_zoom {
-            self.zoom = self.min_zoom;
+            self.zoom = (self.min_zoom * 10.0).ceil() / 10.0;
         } else if new_zoom > self.config.max_zoom as f64 {
             self.zoom = self.config.max_zoom as f64;
         } else {
@@ -140,7 +144,11 @@ impl MapState {
 
     /// Set the zoom level to an absolute value (clamped to `[min_zoom, max_zoom]`).
     pub fn set_zoom(&mut self, zoom: f64) {
-        self.zoom = zoom.clamp(self.min_zoom, self.config.max_zoom as f64);
+        let rounded = (zoom * 10.0).round() / 10.0;
+        self.zoom = rounded.clamp(
+            (self.min_zoom * 10.0).ceil() / 10.0,
+            self.config.max_zoom as f64,
+        );
         self.needs_redraw = true;
     }
 
@@ -273,9 +281,8 @@ impl MapState {
 
         self.min_zoom = 4.0 - (4096.0 / width as f64).ln() / std::f64::consts::LN_2;
         if self.zoom < self.min_zoom {
-            self.zoom = self.min_zoom;
+            self.zoom = (self.min_zoom * 10.0).ceil() / 10.0;
         }
-
         self.last_area = Some((cols, rows));
         self.needs_redraw = true;
     }
@@ -357,6 +364,8 @@ impl MapState {
     /// the ratatui render loop. The widget's `render()` just blits the
     /// already-drawn canvas to the ratatui buffer.
     pub async fn load_visible_tiles(&mut self) {
+        self.loading_status = Some("Loading tiles…".into());
+
         self.renderer.draw(
             self.center_lat,
             self.center_lon,
@@ -364,7 +373,8 @@ impl MapState {
             &self.tile_source,
         ).await;
 
-        // Draw overlays on top of the base map
+        self.loading_status = Some("Drawing overlays…".into());
+
         overlay::render_overlays(
             &self.overlays,
             &mut self.renderer.canvas,
@@ -376,6 +386,7 @@ impl MapState {
             &self.config,
         );
 
+        self.loading_status = None;
         self.needs_redraw = true;
     }
 
@@ -403,12 +414,11 @@ impl MapState {
 
         self.renderer.set_size(width, height);
 
-        // Calculate minimum zoom based on viewport
         self.min_zoom = 4.0 - (4096.0 / width as f64).ln() / std::f64::consts::LN_2;
 
         // If zoom was 0 (auto), set to min_zoom
         if self.zoom < self.min_zoom {
-            self.zoom = self.min_zoom;
+            self.zoom = (self.min_zoom * 10.0).ceil() / 10.0;
         }
 
         self.last_area = Some(new_area);
@@ -444,6 +454,49 @@ impl MapState {
             "center: {:.3}, {:.3}  zoom: {:.1}",
             self.center_lat, self.center_lon, self.zoom,
         )
+    }
+
+    /// Dump the current rendered frame to a JSON file for diagnostic analysis.
+    ///
+    /// Captures: view parameters, rendered text grid, per-cell color data,
+    /// and renderer dimensions. Returns the path written.
+    pub fn dump_frame(&self, path: &str) -> Result<String, std::io::Error> {
+        use std::io::Write;
+
+        let buf = &self.renderer.canvas.buffer;
+        let text_lines = buf.dump_text(self.use_braille);
+        let color_grid = buf.dump_colors();
+
+        let mut f = std::fs::File::create(path)?;
+
+        writeln!(f, "{{")?;
+        writeln!(f, "  \"center_lat\": {},", self.center_lat)?;
+        writeln!(f, "  \"center_lon\": {},", self.center_lon)?;
+        writeln!(f, "  \"zoom\": {},", self.zoom)?;
+        writeln!(f, "  \"use_braille\": {},", self.use_braille)?;
+        writeln!(f, "  \"pixel_width\": {},", self.renderer.width)?;
+        writeln!(f, "  \"pixel_height\": {},", self.renderer.height)?;
+        writeln!(f, "  \"cols\": {},", buf.cols())?;
+        writeln!(f, "  \"rows\": {},", buf.rows())?;
+
+        writeln!(f, "  \"text\": [")?;
+        for (i, line) in text_lines.iter().enumerate() {
+            let escaped = line.replace('\\', "\\\\").replace('"', "\\\"");
+            let comma = if i + 1 < text_lines.len() { "," } else { "" };
+            writeln!(f, "    \"{escaped}\"{comma}")?;
+        }
+        writeln!(f, "  ],")?;
+
+        writeln!(f, "  \"colors\": [")?;
+        for (i, row) in color_grid.iter().enumerate() {
+            let cells: Vec<String> = row.iter().map(|c| format!("[{},{}]", c[0], c[1])).collect();
+            let comma = if i + 1 < color_grid.len() { "," } else { "" };
+            writeln!(f, "    [{}]{comma}", cells.join(","))?;
+        }
+        writeln!(f, "  ]")?;
+        writeln!(f, "}}")?;
+
+        Ok(path.to_string())
     }
 }
 

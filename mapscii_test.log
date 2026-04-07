@@ -1,0 +1,17 @@
+warning: associated function `bresenham_points` is never used
+   --> mapscii-core/src/canvas.rs:345:8
+    |
+ 31 | impl Canvas {
+    | ----------- associated function in this implementation
+...
+345 |     fn bresenham_points(ax: i32, ay: i32, bx: i32, by: i32) -> Vec<(i32, i32)> {
+    |        ^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `mapscii-core` (lib) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s
+     Running unittests src/main.rs (target/debug/deps/mapscii-b8d4f8a187584883)
+     Running unittests src/lib.rs (target/debug/deps/mapscii_core-8848b719e7cb5656)
+     Running tests/integration.rs (target/debug/deps/integration-97a5af9fa00b022c)
+     Running tests/readme_examples.rs (target/debug/deps/readme_examples-e6f39a4e1deb1fb7)

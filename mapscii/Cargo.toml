@@ -16,3 +16,5 @@ crossterm = "0.29"
 clap = { version = "4", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 anyhow = "1"
+env_logger = "0.11"
+log = "0.4"

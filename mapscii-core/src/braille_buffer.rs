@@ -223,6 +223,44 @@ impl BrailleBuffer {
         }
     }
 
+    /// Set a pixel for a thin line: only draws if the cell has few existing
+    /// dots, preventing filled areas (water) from becoming fat colored blocks.
+    pub fn set_pixel_line(&mut self, x: i32, y: i32, color: ColorIdx) {
+        if let Some((idx, mask)) = self.locate(x, y) {
+            if self.pixel_buffer[idx].count_ones() >= 4 {
+                return;
+            }
+            self.pixel_buffer[idx] |= mask;
+            self.foreground_buffer[idx] = color;
+        }
+    }
+
+    /// Fill a rectangular pixel region with a solid foreground color.
+    pub fn fill_rect(&mut self, x0: i32, y0: i32, x1: i32, y1: i32, color: ColorIdx) {
+        let left = x0.max(0);
+        let top = y0.max(0);
+        let right = x1.min(self.width as i32 - 1);
+        let bottom = y1.min(self.height as i32 - 1);
+        for y in top..=bottom {
+            for x in left..=right {
+                if let Some((idx, mask)) = self.locate(x, y) {
+                    self.pixel_buffer[idx] |= mask;
+                    self.foreground_buffer[idx] = color;
+                }
+            }
+        }
+    }
+
+    /// Get the foreground color of a pixel, or 0 if unset.
+    pub fn get_pixel_color(&self, x: i32, y: i32) -> ColorIdx {
+        if let Some((idx, mask)) = self.locate(x, y) {
+            if self.pixel_buffer[idx] & mask != 0 {
+                return self.foreground_buffer[idx];
+            }
+        }
+        0
+    }
+
     /// Clear a pixel at `(x, y)`.
     pub fn unset_pixel(&mut self, x: i32, y: i32) {
         if let Some((idx, mask)) = self.locate(x, y) {
@@ -254,6 +292,65 @@ impl BrailleBuffer {
             let s = ch.encode_utf8(&mut tmp);
             self.set_char(s, x + (i as i32) * 2, y, color);
         }
+    }
+
+    /// Export the rendered cell grid as lines of text for frame dump diagnostics.
+    ///
+    /// Returns a Vec of strings, one per terminal row. Each cell is represented
+    /// by its rendered character (Braille or ASCII block).
+    pub fn dump_text(&self, use_braille: bool) -> Vec<String> {
+        let cols = self.cols();
+        let rows = self.rows();
+        let mut lines = Vec::with_capacity(rows);
+
+        for row in 0..rows {
+            let mut line = String::with_capacity(cols * 3);
+            for col in 0..cols {
+                let idx = row * cols + col;
+                if idx >= self.cell_count() {
+                    break;
+                }
+
+                if let Some(ref ch) = self.char_buffer[idx] {
+                    line.push_str(ch);
+                } else {
+                    let pixel = self.pixel_buffer[idx];
+                    let ch = if use_braille {
+                        char::from_u32(0x2800 + pixel as u32).unwrap_or(' ')
+                    } else {
+                        self.ascii_to_braille
+                            .get(pixel as usize)
+                            .copied()
+                            .unwrap_or(' ')
+                    };
+                    line.push(ch);
+                }
+            }
+            lines.push(line);
+        }
+        lines
+    }
+
+    /// Export per-cell color data as lines: each cell → "fg,bg" pair.
+    pub fn dump_colors(&self) -> Vec<Vec<[u8; 2]>> {
+        let cols = self.cols();
+        let rows = self.rows();
+        let mut result = Vec::with_capacity(rows);
+
+        for row in 0..rows {
+            let mut row_data = Vec::with_capacity(cols);
+            for col in 0..cols {
+                let idx = row * cols + col;
+                if idx >= self.cell_count() {
+                    break;
+                }
+                let fg = self.foreground_buffer[idx];
+                let bg = self.background_buffer[idx] | self.global_background;
+                row_data.push([fg, bg]);
+            }
+            result.push(row_data);
+        }
+        result
     }
 
     /// Render the buffer into a ratatui `Buffer` at the given `area`.
