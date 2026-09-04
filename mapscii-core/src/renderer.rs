@@ -488,11 +488,14 @@ impl Renderer {
                             continue;
                         }
                         *comp_sizes.entry(c).or_default() += 1;
-                        if vis_x0 <= vis_x1 && vis_y0 <= vis_y1 {
-                            if lx == vis_x0 || lx + 1 == vis_x1 || ly == vis_y0 || ly + 1 == vis_y1
-                            {
-                                edge_comps.insert(c);
-                            }
+                        if vis_x0 <= vis_x1
+                            && vis_y0 <= vis_y1
+                            && (lx == vis_x0
+                                || lx + 1 == vis_x1
+                                || ly == vis_y0
+                                || ly + 1 == vis_y1)
+                        {
+                            edge_comps.insert(c);
                         }
                     }
                 }
@@ -578,14 +581,7 @@ impl Renderer {
                             }
                         } else {
                             let h2 = &mut hit2[ni];
-                            if h2.comp == 0 {
-                                *h2 = Hit {
-                                    comp: cid,
-                                    dist: nd,
-                                    sx,
-                                    sy,
-                                };
-                            } else if h2.comp == cid && nd < h2.dist {
+                            if h2.comp == 0 || (h2.comp == cid && nd < h2.dist) {
                                 *h2 = Hit {
                                     comp: cid,
                                     dist: nd,
@@ -764,24 +760,24 @@ impl Renderer {
                                 .get(&feature.layer)
                                 .map(|lc| lc.cluster)
                                 .unwrap_or(false);
-                            if cluster {
-                                if self.label_buffer.write_if_possible(
+                            if cluster
+                                && self.label_buffer.write_if_possible(
                                     &poi_marker,
                                     p.x,
                                     p.y,
                                     None,
                                     Some(3.0),
-                                ) {
-                                    self.canvas.text(
-                                        &poi_marker,
-                                        p.x as i32,
-                                        p.y as i32,
-                                        feature.color,
-                                        false,
-                                    );
-                                    placed = true;
-                                    break;
-                                }
+                                )
+                            {
+                                self.canvas.text(
+                                    &poi_marker,
+                                    p.x as i32,
+                                    p.y as i32,
+                                    feature.color,
+                                    false,
+                                );
+                                placed = true;
+                                break;
                             }
                         }
                     }
@@ -965,7 +961,7 @@ mod tests {
         let tiles = r.visible_tiles(52.51298, 13.42012, 4.0);
         assert!(!tiles.is_empty());
         assert!(tiles.len() <= 16, "too many tiles: {}", tiles.len());
-        assert!(tiles.len() >= 1);
+        assert!(!tiles.is_empty());
     }
 
     #[test]

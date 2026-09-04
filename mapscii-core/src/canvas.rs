@@ -259,6 +259,7 @@ impl Canvas {
     // -- Private drawing helpers -------------------------------------------
 
     /// Bresenham line with optional width (Zingl's algorithm).
+    #[allow(clippy::too_many_arguments)] // map-rendering API: all parameters are coordinate/style dimensions (documented follow-up to restructure)
     fn draw_line(
         &mut self,
         mut x0: i32,

@@ -65,7 +65,7 @@ impl Filter {
                         return feature_type == s;
                     }
                 }
-                properties.get(key).map_or(false, |v| values_equal(v, val))
+                properties.get(key).is_some_and(|v| values_equal(v, val))
             }
 
             Filter::Ne(key, val) => {
@@ -74,7 +74,7 @@ impl Filter {
                         return feature_type != s;
                     }
                 }
-                properties.get(key).map_or(true, |v| !values_equal(v, val))
+                properties.get(key).is_none_or(|v| !values_equal(v, val))
             }
 
             Filter::In(key, vals) => {
@@ -83,7 +83,7 @@ impl Filter {
                 }
                 properties
                     .get(key)
-                    .map_or(false, |prop| vals.iter().any(|v| values_equal(prop, v)))
+                    .is_some_and(|prop| vals.iter().any(|v| values_equal(prop, v)))
             }
 
             Filter::NotIn(key, vals) => {
@@ -92,7 +92,7 @@ impl Filter {
                 }
                 properties
                     .get(key)
-                    .map_or(true, |prop| !vals.iter().any(|v| values_equal(prop, v)))
+                    .is_none_or(|prop| !vals.iter().any(|v| values_equal(prop, v)))
             }
 
             Filter::Has(key) => properties.contains_key(key),
@@ -102,19 +102,19 @@ impl Filter {
             Filter::Gt(key, val) => properties
                 .get(key)
                 .and_then(as_f64)
-                .map_or(false, |v| v > *val),
+                .is_some_and(|v| v > *val),
             Filter::Gte(key, val) => properties
                 .get(key)
                 .and_then(as_f64)
-                .map_or(false, |v| v >= *val),
+                .is_some_and(|v| v >= *val),
             Filter::Lt(key, val) => properties
                 .get(key)
                 .and_then(as_f64)
-                .map_or(false, |v| v < *val),
+                .is_some_and(|v| v < *val),
             Filter::Lte(key, val) => properties
                 .get(key)
                 .and_then(as_f64)
-                .map_or(false, |v| v <= *val),
+                .is_some_and(|v| v <= *val),
         }
     }
 }
@@ -322,11 +322,9 @@ impl Styler {
                     Self::replace_constants(constants, val);
                 }
             }
-            Value::String(s) => {
-                if s.starts_with('@') {
-                    if let Some(replacement) = constants.get(s.as_str()) {
-                        *tree = replacement.clone();
-                    }
+            Value::String(s) if s.starts_with('@') => {
+                if let Some(replacement) = constants.get(s.as_str()) {
+                    *tree = replacement.clone();
                 }
             }
             _ => {}

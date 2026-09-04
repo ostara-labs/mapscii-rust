@@ -8,7 +8,7 @@
 //!
 //! Translated from the original mapscii `TileSource.js`.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use lru::LruCache;
@@ -40,7 +40,7 @@ impl TileKey {
         format!("{}-{}-{}", self.z, self.x, self.y)
     }
 
-    fn disk_path(&self, base: &PathBuf) -> PathBuf {
+    fn disk_path(&self, base: &Path) -> PathBuf {
         base.join(self.z.to_string())
             .join(format!("{}-{}.pbf", self.x, self.y))
     }

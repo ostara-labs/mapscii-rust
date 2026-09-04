@@ -532,6 +532,7 @@ fn compute_bbox(points: &[TilePoint]) -> (i32, i32, i32, i32) {
     (min_x, max_x, min_y, max_y)
 }
 
+#[allow(clippy::too_many_arguments)] // map-rendering API: all parameters are coordinate/style dimensions (documented follow-up to restructure)
 fn make_feature_fill(
     layer_name: &str,
     style: &crate::styler::StyleLayer,
@@ -566,6 +567,7 @@ fn make_feature_fill(
     })
 }
 
+#[allow(clippy::too_many_arguments)] // map-rendering API: all parameters are coordinate/style dimensions (documented follow-up to restructure)
 fn make_feature_single(
     layer_name: &str,
     style: &crate::styler::StyleLayer,

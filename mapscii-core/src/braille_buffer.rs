@@ -138,8 +138,8 @@ pub struct BrailleBuffer {
 impl BrailleBuffer {
     /// Create a new buffer.  `width` must be even, `height` a multiple of 4.
     pub fn new(width: usize, height: usize) -> Self {
-        debug_assert!(width % 2 == 0, "width must be even");
-        debug_assert!(height % 4 == 0, "height must be multiple of 4");
+        debug_assert!(width.is_multiple_of(2), "width must be even");
+        debug_assert!(height.is_multiple_of(4), "height must be multiple of 4");
 
         let cell_count = (width / 2) * (height / 4);
 
@@ -387,8 +387,8 @@ impl BrailleBuffer {
                         if w > 1 {
                             skip = w - 1;
                         }
-                    } else if skip > 0 {
-                        skip -= 1;
+                    } else {
+                        skip = skip.saturating_sub(1);
                     }
                 } else if skip > 0 {
                     skip -= 1;

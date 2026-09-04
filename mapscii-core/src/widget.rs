@@ -628,7 +628,7 @@ mod tests {
 
     #[test]
     fn test_map_widget_default() {
-        let _ = MapWidget::default();
+        let _ = MapWidget;
     }
 
     #[test]

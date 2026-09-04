@@ -122,12 +122,7 @@ pub fn normalize(lon: &mut f64, lat: &mut f64) {
     if *lon > 180.0 {
         *lon -= 360.0;
     }
-    if *lat > 85.0511 {
-        *lat = 85.0511;
-    }
-    if *lat < -85.0511 {
-        *lat = -85.0511;
-    }
+    *lat = (*lat).clamp(-85.0511, 85.0511);
 }
 
 /// Population count (number of set bits) of a `u32`.
@@ -240,7 +235,8 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::approx_constant)] // 3.14 is the expected truncation of PI — using PI for both operands would be a tautology
     fn test_digits() {
-        assert!((digits(3.14159, 2) - 3.14).abs() < 1e-10);
+        assert!((digits(std::f64::consts::PI, 2) - 3.14).abs() < 1e-10);
     }
 }

@@ -6,21 +6,12 @@
 use std::collections::HashMap;
 
 /// Configuration for per-layer behavior (label margins, clustering).
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct LayerConfig {
     /// Margin (in characters) for label collision.
     pub margin: Option<u32>,
     /// Whether to cluster overlapping labels.
     pub cluster: bool,
-}
-
-impl Default for LayerConfig {
-    fn default() -> Self {
-        Self {
-            margin: None,
-            cluster: false,
-        }
-    }
 }
 
 /// Immutable map configuration. Construct with `MapConfig::default()` and
