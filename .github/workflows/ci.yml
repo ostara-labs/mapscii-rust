@@ -1,0 +1,24 @@
+name: CI
+
+# Single caller: CI logic lives in the devtools aggregate (org-wide
+# convergence model). Required contexts: gate / core, gate / rust,
+# gate / elixir, gate / typescript, gate / python, gate / gate.
+# Renaming the caller job blocks merges loudly (required checks never
+# report). Bump the digest deliberately, in step with the submodule:
+# `make devtools-update`, then move the @SHA to the matching tag commit.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: gate
+    uses: ostara-labs/devtools/.github/workflows/ci.yml@4ae963f9ce84f0cca317e3c1e629dcb4345b1635 # v1.4.1
+    with:
+      stack-dir: "."

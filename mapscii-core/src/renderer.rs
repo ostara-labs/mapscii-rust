@@ -221,14 +221,16 @@ impl Renderer {
 
         for ty in ty_min..=ty_max {
             for tx in tx_min..=tx_max {
-                let pos_x =
-                    self.width as f64 / 2.0 - (center.x - tx as f64) * tile_size;
-                let pos_y =
-                    self.height as f64 / 2.0 - (center.y - ty as f64) * tile_size;
+                let pos_x = self.width as f64 / 2.0 - (center.x - tx as f64) * tile_size;
+                let pos_y = self.height as f64 / 2.0 - (center.y - ty as f64) * tile_size;
 
                 let mut tile_x = tx % (grid_size as i32);
                 if tile_x < 0 {
-                    tile_x = if tile_z == 0.0 { 0 } else { tile_x + grid_size as i32 };
+                    tile_x = if tile_z == 0.0 {
+                        0
+                    } else {
+                        tile_x + grid_size as i32
+                    };
                 }
 
                 if ty < 0
@@ -322,17 +324,17 @@ impl Renderer {
             total_features += features.len();
 
             if *layer_id == "water" {
-                let raw_count = layer.tree.locate_in_envelope_intersecting(&search_envelope).count();
+                let raw_count = layer
+                    .tree
+                    .locate_in_envelope_intersecting(&search_envelope)
+                    .count();
                 log::trace!(
                     "[renderer] water layer: raw_rtree={} after_filter={} extent={} scale={:.4} tile={:?}",
                     raw_count, features.len(), layer.extent, scale, vt.key
                 );
             }
 
-            result.insert(
-                layer_id.to_string(),
-                TileLayerFeatures { scale, features },
-            );
+            result.insert(layer_id.to_string(), TileLayerFeatures { scale, features });
         }
 
         log::trace!(
@@ -351,7 +353,6 @@ impl Renderer {
 
         let tile_zoom = utils::base_zoom(zoom, &self.config);
         let draw_order = Self::generate_draw_order(tile_zoom);
-
 
         let mut labels: Vec<(&FetchedTile, &TileFeature, f64)> = Vec::new();
         let mut seen: HashSet<String> = HashSet::new();
@@ -411,7 +412,9 @@ impl Renderer {
 
                 let tw = vt.size.ceil() as usize;
                 let th = tw;
-                if tw == 0 || th == 0 { continue; }
+                if tw == 0 || th == 0 {
+                    continue;
+                }
 
                 let x_off = vt.position_x.round() as i32;
                 let y_off = vt.position_y.round() as i32;
@@ -443,7 +446,12 @@ impl Renderer {
                             let mut stack = vec![(lx, ly)];
                             comp[i] = cid;
                             while let Some((sx, sy)) = stack.pop() {
-                                for (nx, ny) in [(sx.wrapping_sub(1), sy), (sx + 1, sy), (sx, sy.wrapping_sub(1)), (sx, sy + 1)] {
+                                for (nx, ny) in [
+                                    (sx.wrapping_sub(1), sy),
+                                    (sx + 1, sy),
+                                    (sx, sy.wrapping_sub(1)),
+                                    (sx, sy + 1),
+                                ] {
                                     if nx < tw && ny < th {
                                         let ni = ny * tw + nx;
                                         if mask[ni] == 1 && comp[ni] == 0 {
@@ -457,7 +465,9 @@ impl Renderer {
                     }
                 }
 
-                if next_id <= 2 { continue; }
+                if next_id <= 2 {
+                    continue;
+                }
 
                 // Identify large edge-connected water components (likely ocean).
                 let vp_w = self.width as i32;
@@ -467,17 +477,25 @@ impl Renderer {
                 let vis_x1 = tw.min((vp_w - x_off) as usize);
                 let vis_y1 = th.min((vp_h - y_off) as usize);
 
-                let mut comp_sizes: std::collections::HashMap<u16, u32> = std::collections::HashMap::new();
-                let mut edge_comps: std::collections::HashSet<u16> = std::collections::HashSet::new();
+                let mut comp_sizes: std::collections::HashMap<u16, u32> =
+                    std::collections::HashMap::new();
+                let mut edge_comps: std::collections::HashSet<u16> =
+                    std::collections::HashSet::new();
                 for ly in 0..th {
                     for lx in 0..tw {
                         let c = comp[ly * tw + lx];
-                        if c == 0 { continue; }
+                        if c == 0 {
+                            continue;
+                        }
                         *comp_sizes.entry(c).or_default() += 1;
-                        if vis_x0 <= vis_x1 && vis_y0 <= vis_y1 {
-                            if lx == vis_x0 || lx + 1 == vis_x1 || ly == vis_y0 || ly + 1 == vis_y1 {
-                                edge_comps.insert(c);
-                            }
+                        if vis_x0 <= vis_x1
+                            && vis_y0 <= vis_y1
+                            && (lx == vis_x0
+                                || lx + 1 == vis_x1
+                                || ly == vis_y0
+                                || ly + 1 == vis_y1)
+                        {
+                            edge_comps.insert(c);
                         }
                     }
                 }
@@ -491,7 +509,12 @@ impl Renderer {
                 // EMPTY pixels. For each empty pixel track the two nearest
                 // distinct components: (comp_id, distance, source_x, source_y).
                 #[derive(Clone, Copy, Default)]
-                struct Hit { comp: u16, dist: u16, sx: u16, sy: u16 }
+                struct Hit {
+                    comp: u16,
+                    dist: u16,
+                    sx: u16,
+                    sy: u16,
+                }
                 let mut hit1 = vec![Hit::default(); n];
                 let mut hit2 = vec![Hit::default(); n];
 
@@ -501,10 +524,17 @@ impl Renderer {
                 for ly in 0..th {
                     for lx in 0..tw {
                         let i = ly * tw + lx;
-                        if mask[i] != 1 { continue; }
-                        let has_empty_neighbor = [(lx.wrapping_sub(1), ly), (lx + 1, ly), (lx, ly.wrapping_sub(1)), (lx, ly + 1)]
-                            .iter()
-                            .any(|&(nx, ny)| nx < tw && ny < th && mask[ny * tw + nx] == 0);
+                        if mask[i] != 1 {
+                            continue;
+                        }
+                        let has_empty_neighbor = [
+                            (lx.wrapping_sub(1), ly),
+                            (lx + 1, ly),
+                            (lx, ly.wrapping_sub(1)),
+                            (lx, ly + 1),
+                        ]
+                        .iter()
+                        .any(|&(nx, ny)| nx < tw && ny < th && mask[ny * tw + nx] == 0);
                         if has_empty_neighbor {
                             queue.push_back((lx, ly, 0, comp[i], lx as u16, ly as u16));
                         }
@@ -512,28 +542,52 @@ impl Renderer {
                 }
 
                 while let Some((x, y, dist, cid, sx, sy)) = queue.pop_front() {
-                    if dist >= gap_max { continue; }
-                    for (nx, ny) in [(x.wrapping_sub(1), y), (x + 1, y), (x, y.wrapping_sub(1)), (x, y + 1)] {
-                        if nx >= tw || ny >= th { continue; }
+                    if dist >= gap_max {
+                        continue;
+                    }
+                    for (nx, ny) in [
+                        (x.wrapping_sub(1), y),
+                        (x + 1, y),
+                        (x, y.wrapping_sub(1)),
+                        (x, y + 1),
+                    ] {
+                        if nx >= tw || ny >= th {
+                            continue;
+                        }
                         let ni = ny * tw + nx;
-                        if mask[ni] != 0 { continue; }
+                        if mask[ni] != 0 {
+                            continue;
+                        }
 
                         let nd = dist + 1;
                         let h = &mut hit1[ni];
                         if h.comp == 0 {
-                            *h = Hit { comp: cid, dist: nd, sx, sy };
+                            *h = Hit {
+                                comp: cid,
+                                dist: nd,
+                                sx,
+                                sy,
+                            };
                             queue.push_back((nx, ny, nd, cid, sx, sy));
                         } else if h.comp == cid {
                             if nd < h.dist {
-                                *h = Hit { comp: cid, dist: nd, sx, sy };
+                                *h = Hit {
+                                    comp: cid,
+                                    dist: nd,
+                                    sx,
+                                    sy,
+                                };
                                 queue.push_back((nx, ny, nd, cid, sx, sy));
                             }
                         } else {
                             let h2 = &mut hit2[ni];
-                            if h2.comp == 0 {
-                                *h2 = Hit { comp: cid, dist: nd, sx, sy };
-                            } else if h2.comp == cid && nd < h2.dist {
-                                *h2 = Hit { comp: cid, dist: nd, sx, sy };
+                            if h2.comp == 0 || (h2.comp == cid && nd < h2.dist) {
+                                *h2 = Hit {
+                                    comp: cid,
+                                    dist: nd,
+                                    sx,
+                                    sy,
+                                };
                             }
                         }
                     }
@@ -547,12 +601,18 @@ impl Renderer {
                 for ly in 0..th {
                     for lx in 0..tw {
                         let i = ly * tw + lx;
-                        if mask[i] != 0 { continue; }
+                        if mask[i] != 0 {
+                            continue;
+                        }
                         let h1 = hit1[i];
-                        if h1.comp == 0 { continue; }
+                        if h1.comp == 0 {
+                            continue;
+                        }
 
                         let h2 = hit2[i];
-                        if h2.comp != 0 && h1.comp != h2.comp && h1.dist + h2.dist <= gap_max
+                        if h2.comp != 0
+                            && h1.comp != h2.comp
+                            && h1.dist + h2.dist <= gap_max
                             && (ocean_comps.contains(&h1.comp) || ocean_comps.contains(&h2.comp))
                         {
                             let dx1 = h1.sx as f32 - lx as f32;
@@ -587,7 +647,8 @@ impl Renderer {
                 if filled_count > 0 {
                     log::debug!(
                         "[renderer] bridge-fill tile {:?}: filled {} pixels",
-                        vt.key, filled_count,
+                        vt.key,
+                        filled_count,
                     );
                 }
             }
@@ -621,7 +682,8 @@ impl Renderer {
                 if let Some(ring) = feature.points.first() {
                     let points = self.scale_and_reduce(vt, ring, scale, true);
                     if !points.is_empty() {
-                        self.canvas.polyline_thin(&points, feature.color, feature.line_width);
+                        self.canvas
+                            .polyline_thin(&points, feature.color, feature.line_width);
                     }
                 }
             }
@@ -650,23 +712,19 @@ impl Renderer {
                     }
                     if unique < 3 {
                         for p in outer {
-                            self.canvas.buffer.set_pixel(
-                                p.x as i32,
-                                p.y as i32,
-                                feature.color,
-                            );
+                            self.canvas
+                                .buffer
+                                .set_pixel(p.x as i32, p.y as i32, feature.color);
                         }
                     } else {
-                        self.canvas.scanline_polygon_fill(&scaled_rings, feature.color);
+                        self.canvas
+                            .scanline_polygon_fill(&scaled_rings, feature.color);
                     }
                 }
             }
             "symbol" => {
                 let poi_marker = self.config.poi_marker.to_string();
-                let text = feature
-                    .label
-                    .as_deref()
-                    .unwrap_or(&poi_marker);
+                let text = feature.label.as_deref().unwrap_or(&poi_marker);
 
                 if seen.contains(text) && text != poi_marker {
                     return;
@@ -686,14 +744,12 @@ impl Renderer {
                             .map(|m| m as f64);
                         let margin = layer_margin.or(Some(self.config.label_margin as f64));
 
-                        if self.label_buffer.write_if_possible(
-                            text,
-                            x,
-                            p.y,
-                            None,
-                            margin,
-                        ) {
-                            self.canvas.text(text, x as i32, p.y as i32, feature.color, false);
+                        if self
+                            .label_buffer
+                            .write_if_possible(text, x, p.y, None, margin)
+                        {
+                            self.canvas
+                                .text(text, x as i32, p.y as i32, feature.color, false);
                             placed = true;
                             break;
                         } else {
@@ -704,24 +760,24 @@ impl Renderer {
                                 .get(&feature.layer)
                                 .map(|lc| lc.cluster)
                                 .unwrap_or(false);
-                            if cluster {
-                                if self.label_buffer.write_if_possible(
+                            if cluster
+                                && self.label_buffer.write_if_possible(
                                     &poi_marker,
                                     p.x,
                                     p.y,
                                     None,
                                     Some(3.0),
-                                ) {
-                                    self.canvas.text(
-                                        &poi_marker,
-                                        p.x as i32,
-                                        p.y as i32,
-                                        feature.color,
-                                        false,
-                                    );
-                                    placed = true;
-                                    break;
-                                }
+                                )
+                            {
+                                self.canvas.text(
+                                    &poi_marker,
+                                    p.x as i32,
+                                    p.y as i32,
+                                    feature.color,
+                                    false,
+                                );
+                                placed = true;
+                                break;
                             }
                         }
                     }
@@ -864,7 +920,6 @@ impl Renderer {
             layers
         }
     }
-
 }
 
 #[cfg(test)]
@@ -906,7 +961,7 @@ mod tests {
         let tiles = r.visible_tiles(52.51298, 13.42012, 4.0);
         assert!(!tiles.is_empty());
         assert!(tiles.len() <= 16, "too many tiles: {}", tiles.len());
-        assert!(tiles.len() >= 1);
+        assert!(!tiles.is_empty());
     }
 
     #[test]
@@ -929,7 +984,10 @@ mod tests {
         assert!(order.contains(&"landuse"));
         let landuse_pos = order.iter().position(|&l| l == "landuse").unwrap();
         let water_pos = order.iter().position(|&l| l == "water").unwrap();
-        assert!(landuse_pos < water_pos, "landuse must be drawn before water");
+        assert!(
+            landuse_pos < water_pos,
+            "landuse must be drawn before water"
+        );
     }
 
     #[test]

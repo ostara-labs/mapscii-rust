@@ -8,7 +8,7 @@
 //!
 //! Translated from the original mapscii `TileSource.js`.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use lru::LruCache;
@@ -40,7 +40,7 @@ impl TileKey {
         format!("{}-{}-{}", self.z, self.x, self.y)
     }
 
-    fn disk_path(&self, base: &PathBuf) -> PathBuf {
+    fn disk_path(&self, base: &Path) -> PathBuf {
         base.join(self.z.to_string())
             .join(format!("{}-{}.pbf", self.x, self.y))
     }
@@ -114,7 +114,7 @@ impl TileSource {
             source,
             mode,
             cache: Mutex::new(LruCache::new(
-                NonZeroUsize::new(config.tile_cache_size).unwrap()
+                NonZeroUsize::new(config.tile_cache_size).unwrap(),
             )),
             http_client: reqwest::Client::new(),
             cache_dir,
@@ -239,10 +239,9 @@ impl TileSource {
             .map_err(|e| TileSourceError::MBTiles(e.to_string()))?;
 
         let data: Vec<u8> = stmt
-            .query_row(
-                rusqlite::params![key.z as u32, key.x, tms_y],
-                |row| row.get(0),
-            )
+            .query_row(rusqlite::params![key.z as u32, key.x, tms_y], |row| {
+                row.get(0)
+            })
             .map_err(|e| TileSourceError::MBTiles(e.to_string()))?;
 
         Ok(data)

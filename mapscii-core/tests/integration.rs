@@ -31,7 +31,11 @@ async fn water_pct(lat: f64, lon: f64, zoom: f64) -> f64 {
             }
         }
     }
-    if total > 0 { water as f64 / total as f64 * 100.0 } else { 0.0 }
+    if total > 0 {
+        water as f64 / total as f64 * 100.0
+    } else {
+        0.0
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +103,10 @@ async fn test_water_ratio_zoom_3_5() {
     println!("z={z} land={land:.1}% sea={sea:.1}% coast={coast:.1}%");
     assert!(land < 5.0, "z={z} land={land:.1}% — should be <5%");
     assert!(sea > 90.0, "z={z} sea={sea:.1}% — should be >90%");
-    assert!(coast > 30.0 && coast < 85.0, "z={z} coast={coast:.1}% — should be 30-85%");
+    assert!(
+        coast > 30.0 && coast < 85.0,
+        "z={z} coast={coast:.1}% — should be 30-85%"
+    );
 }
 
 #[tokio::test]
@@ -111,7 +118,10 @@ async fn test_water_ratio_zoom_4() {
     println!("z={z} land={land:.1}% sea={sea:.1}% coast={coast:.1}%");
     assert!(land < 5.0, "z={z} land={land:.1}% — should be <5%");
     assert!(sea > 90.0, "z={z} sea={sea:.1}% — should be >90%");
-    assert!(coast > 30.0 && coast < 85.0, "z={z} coast={coast:.1}% — should be 30-85%");
+    assert!(
+        coast > 30.0 && coast < 85.0,
+        "z={z} coast={coast:.1}% — should be 30-85%"
+    );
 }
 
 #[tokio::test]
@@ -123,7 +133,10 @@ async fn test_water_ratio_zoom_5() {
     println!("z={z} land={land:.1}% sea={sea:.1}% coast={coast:.1}%");
     assert!(land < 5.0, "z={z} land={land:.1}% — should be <5%");
     assert!(sea > 90.0, "z={z} sea={sea:.1}% — should be >90%");
-    assert!(coast > 30.0 && coast < 85.0, "z={z} coast={coast:.1}% — should be 30-85%");
+    assert!(
+        coast > 30.0 && coast < 85.0,
+        "z={z} coast={coast:.1}% — should be 30-85%"
+    );
 }
 
 #[tokio::test]
@@ -135,7 +148,10 @@ async fn test_water_ratio_zoom_6() {
     println!("z={z} land={land:.1}% sea={sea:.1}% coast={coast:.1}%");
     assert!(land < 5.0, "z={z} land={land:.1}% — should be <5%");
     assert!(sea > 90.0, "z={z} sea={sea:.1}% — should be >90%");
-    assert!(coast > 30.0 && coast < 85.0, "z={z} coast={coast:.1}% — should be 30-85%");
+    assert!(
+        coast > 30.0 && coast < 85.0,
+        "z={z} coast={coast:.1}% — should be 30-85%"
+    );
 }
 
 #[tokio::test]
@@ -176,10 +192,15 @@ async fn test_water_ratio_world_view() {
     let turkey = water_pct(39.0, 35.0, 0.267).await;
     let sahara = water_pct(LAND_LAT, LAND_LON, 0.267).await;
     let atlantic = water_pct(SEA_LAT, SEA_LON, 0.267).await;
-    println!("z=0.267 spain={spain:.1}% turkey={turkey:.1}% sahara={sahara:.1}% atlantic={atlantic:.1}%");
+    println!(
+        "z=0.267 spain={spain:.1}% turkey={turkey:.1}% sahara={sahara:.1}% atlantic={atlantic:.1}%"
+    );
 
     assert!(spain < 85.0, "z=0.267 spain={spain:.1}% — too much water");
-    assert!(turkey < 85.0, "z=0.267 turkey={turkey:.1}% — too much water");
+    assert!(
+        turkey < 85.0,
+        "z=0.267 turkey={turkey:.1}% — too much water"
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -192,7 +213,10 @@ async fn test_pan_stability_australia() {
     let z = 1.667;
     let a = water_pct(-32.87, 152.21, z).await;
     let b = water_pct(-31.37, 152.21, z).await;
-    println!("pan stability z={z} a={a:.1}% b={b:.1}% diff={:.1}%", (a - b).abs());
+    println!(
+        "pan stability z={z} a={a:.1}% b={b:.1}% diff={:.1}%",
+        (a - b).abs()
+    );
     assert!(
         (a - b).abs() < 5.0,
         "small pan should not change water ratio by >5%: a={a:.1}% b={b:.1}%"

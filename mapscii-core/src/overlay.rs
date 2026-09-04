@@ -232,6 +232,7 @@ impl OverlayCollection {
 ///
 /// `center_lat`, `center_lon`, `zoom` define the current viewport.
 /// `width` and `height` are the canvas pixel dimensions.
+#[allow(clippy::too_many_arguments)] // map-rendering API: all parameters are coordinate/style dimensions (documented follow-up to restructure)
 pub fn render_overlays(
     overlays: &OverlayCollection,
     canvas: &mut Canvas,
@@ -288,6 +289,7 @@ fn render_area_rings(canvas: &mut Canvas, px_rings: &[Vec<Point>], overlay: &Ove
     }
 }
 
+#[allow(clippy::too_many_arguments)] // map-rendering API: all parameters are coordinate/style dimensions (documented follow-up to restructure)
 fn render_geojson_geometry(
     geom: &GeoJsonGeometry,
     canvas: &mut Canvas,
@@ -308,7 +310,7 @@ fn render_geojson_geometry(
             canvas.text(&marker, p.x as i32, p.y as i32, overlay.color, true);
         }
         GeoJsonGeometry::LineString(positions) => {
-            let points: Vec<Point> = positions.iter().map(|ll| to_px(ll)).collect();
+            let points: Vec<Point> = positions.iter().map(to_px).collect();
             if points.len() >= 2 {
                 canvas.polyline(&points, overlay.color, overlay.line_width);
             }
@@ -316,7 +318,7 @@ fn render_geojson_geometry(
         GeoJsonGeometry::Polygon(rings) => {
             let px_rings: Vec<Vec<Point>> = rings
                 .iter()
-                .map(|ring| ring.iter().map(|ll| to_px(ll)).collect())
+                .map(|ring| ring.iter().map(to_px).collect())
                 .collect();
             if !px_rings.is_empty() && px_rings[0].len() >= 3 {
                 render_area_rings(canvas, &px_rings, overlay);
@@ -331,7 +333,7 @@ fn render_geojson_geometry(
         }
         GeoJsonGeometry::MultiLineString(lines) => {
             for line in lines {
-                let points: Vec<Point> = line.iter().map(|ll| to_px(ll)).collect();
+                let points: Vec<Point> = line.iter().map(to_px).collect();
                 if points.len() >= 2 {
                     canvas.polyline(&points, overlay.color, overlay.line_width);
                 }
@@ -341,7 +343,7 @@ fn render_geojson_geometry(
             for polygon_rings in polygons {
                 let px_rings: Vec<Vec<Point>> = polygon_rings
                     .iter()
-                    .map(|ring| ring.iter().map(|ll| to_px(ll)).collect())
+                    .map(|ring| ring.iter().map(to_px).collect())
                     .collect();
                 if !px_rings.is_empty() && px_rings[0].len() >= 3 {
                     render_area_rings(canvas, &px_rings, overlay);

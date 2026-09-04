@@ -72,9 +72,7 @@ pub struct MapState {
 impl MapState {
     /// Create a new map state with the given configuration.
     pub fn new(config: Arc<MapConfig>) -> Self {
-        let styler = Arc::new(
-            Styler::new(config.style_json).expect("failed to parse style JSON"),
-        );
+        let styler = Arc::new(Styler::new(config.style_json).expect("failed to parse style JSON"));
 
         let mut tile_source = TileSource::new(Arc::clone(&config));
         tile_source.set_styler(Arc::clone(&styler));
@@ -296,23 +294,13 @@ impl MapState {
     // -- Overlays ----------------------------------------------------------
 
     /// Add a marker at a position.
-    pub fn add_marker(
-        &mut self,
-        pos: LatLon,
-        label: Option<String>,
-        color: ColorIdx,
-    ) -> OverlayId {
+    pub fn add_marker(&mut self, pos: LatLon, label: Option<String>, color: ColorIdx) -> OverlayId {
         self.needs_redraw = true;
         self.overlays.add_marker(pos, label, color)
     }
 
     /// Add a polyline.
-    pub fn add_line(
-        &mut self,
-        points: Vec<LatLon>,
-        color: ColorIdx,
-        line_width: f64,
-    ) -> OverlayId {
+    pub fn add_line(&mut self, points: Vec<LatLon>, color: ColorIdx, line_width: f64) -> OverlayId {
         self.needs_redraw = true;
         self.overlays.add_line(points, color, line_width)
     }
@@ -326,7 +314,8 @@ impl MapState {
         fill_opacity: f64,
     ) -> OverlayId {
         self.needs_redraw = true;
-        self.overlays.add_area(points, fill_color, stroke_color, fill_opacity)
+        self.overlays
+            .add_area(points, fill_color, stroke_color, fill_opacity)
     }
 
     /// Add a GeoJSON layer.
@@ -338,7 +327,8 @@ impl MapState {
         fill_opacity: f64,
     ) -> Result<OverlayId, String> {
         self.needs_redraw = true;
-        self.overlays.add_geojson_layer(geojson_str, fill_color, stroke_color, fill_opacity)
+        self.overlays
+            .add_geojson_layer(geojson_str, fill_color, stroke_color, fill_opacity)
     }
 
     /// Remove an overlay by ID.
@@ -366,12 +356,14 @@ impl MapState {
     pub async fn load_visible_tiles(&mut self) {
         self.loading_status = Some("Loading tiles…".into());
 
-        self.renderer.draw(
-            self.center_lat,
-            self.center_lon,
-            self.zoom,
-            &self.tile_source,
-        ).await;
+        self.renderer
+            .draw(
+                self.center_lat,
+                self.center_lon,
+                self.zoom,
+                &self.tile_source,
+            )
+            .await;
 
         self.loading_status = Some("Drawing overlays…".into());
 
@@ -636,15 +628,13 @@ mod tests {
 
     #[test]
     fn test_map_widget_default() {
-        let _ = MapWidget::default();
+        let _ = MapWidget;
     }
 
     #[test]
     fn test_map_state_with_builders() {
         let config = test_config();
-        let state = MapState::new(config)
-            .with_center(48.8, 2.3)
-            .with_zoom(10.0);
+        let state = MapState::new(config).with_center(48.8, 2.3).with_zoom(10.0);
         assert!((state.center_lat - 48.8).abs() < 0.01);
         assert!((state.center_lon - 2.3).abs() < 0.01);
         assert!((state.zoom - 10.0).abs() < 0.01);
