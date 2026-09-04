@@ -228,14 +228,16 @@ impl Canvas {
         opacity: f64,
     ) {
         if opacity >= 1.0 {
-            for tri in triangles.chunks_exact(3) {
+            let (tris, _) = triangles.as_chunks::<3>();
+            for tri in tris {
                 let pa = [vertices[tri[0] * 2], vertices[tri[0] * 2 + 1]];
                 let pb = [vertices[tri[1] * 2], vertices[tri[1] * 2 + 1]];
                 let pc = [vertices[tri[2] * 2], vertices[tri[2] * 2 + 1]];
                 self.filled_triangle(pa, pb, pc, color);
             }
         } else {
-            for tri in triangles.chunks_exact(3) {
+            let (tris, _) = triangles.as_chunks::<3>();
+            for tri in tris {
                 let pa = [vertices[tri[0] * 2], vertices[tri[0] * 2 + 1]];
                 let pb = [vertices[tri[1] * 2], vertices[tri[1] * 2 + 1]];
                 let pc = [vertices[tri[2] * 2], vertices[tri[2] * 2 + 1]];
@@ -479,7 +481,8 @@ impl Canvas {
 
             x_intersections.sort_unstable();
 
-            for pair in x_intersections.chunks_exact(2) {
+            let (pairs, _) = x_intersections.as_chunks::<2>();
+            for pair in pairs {
                 let left = pair[0].max(0);
                 let right = pair[1].min(w - 1);
                 for x in left..=right {
