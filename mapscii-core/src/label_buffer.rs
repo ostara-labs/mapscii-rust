@@ -89,7 +89,10 @@ impl LabelBuffer {
         let area = Self::calculate_area(text, x, y, margin, None);
         let envelope = area.envelope();
         // Check for any intersecting entries
-        self.tree.locate_in_envelope_intersecting(&envelope).next().is_none()
+        self.tree
+            .locate_in_envelope_intersecting(&envelope)
+            .next()
+            .is_none()
     }
 
     /// Calculate the bounding box for a label.

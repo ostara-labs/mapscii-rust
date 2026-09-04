@@ -1,8 +1,8 @@
 //! Compile-time verification of README code examples.
 //! Run with: cargo test --test readme_examples
 
+use mapscii_core::{LatLon, MapConfig, MapState, MapWidget};
 use std::sync::Arc;
-use mapscii_core::{MapConfig, MapState, MapWidget, LatLon};
 
 /// Verify the minimal example compiles.
 #[tokio::test]
@@ -26,7 +26,7 @@ fn readme_config_builder() {
             .with_language("ja")
             .with_braille(true)
             .with_tile_persistence(true)
-            .with_source("http://mapscii.me/")
+            .with_source("http://mapscii.me/"),
     );
 }
 

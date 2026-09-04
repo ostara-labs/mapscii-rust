@@ -45,6 +45,6 @@ pub use widget::{MapState, MapWidget};
 
 // Re-export commonly used types from submodules
 pub use braille_buffer::ColorIdx;
-pub use tile_source::{TileKey, TileSource};
 pub use renderer::Renderer;
 pub use styler::Styler;
+pub use tile_source::{TileKey, TileSource};

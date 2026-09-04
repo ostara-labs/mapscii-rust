@@ -180,7 +180,7 @@ async fn run_app(
             state.load_visible_tiles().await;
             pending_reload = false;
         }
-        
+
         draw_frame(terminal, state)?;
 
         if event::poll(Duration::from_millis(50))? {
@@ -247,36 +247,34 @@ async fn run_app(
                         _ => {}
                     }
                 }
-                Event::Mouse(mouse) => {
-                    match mouse.kind {
-                        MouseEventKind::ScrollUp => {
-                            state.zoom_by(state.config.zoom_step);
-                            pending_reload = true;
-                            last_navigation = Instant::now();
-                        }
-                        MouseEventKind::ScrollDown => {
-                            state.zoom_by(-state.config.zoom_step);
-                            pending_reload = true;
-                            last_navigation = Instant::now();
-                        }
-                        MouseEventKind::Down(crossterm::event::MouseButton::Left) => {
-                            state.drag_start(mouse.column as f64, mouse.row as f64);
-                        }
-                        MouseEventKind::Up(crossterm::event::MouseButton::Left) => {
-                            if state.drag_end() {
-                                pending_reload = true;
-                                last_navigation = Instant::now();
-                            }
-                        }
-                        MouseEventKind::Drag(crossterm::event::MouseButton::Left) => {
-                            if state.drag_to(mouse.column as f64, mouse.row as f64) {
-                                pending_reload = true;
-                                last_navigation = Instant::now();
-                            }
-                        }
-                        _ => {}
+                Event::Mouse(mouse) => match mouse.kind {
+                    MouseEventKind::ScrollUp => {
+                        state.zoom_by(state.config.zoom_step);
+                        pending_reload = true;
+                        last_navigation = Instant::now();
                     }
-                }
+                    MouseEventKind::ScrollDown => {
+                        state.zoom_by(-state.config.zoom_step);
+                        pending_reload = true;
+                        last_navigation = Instant::now();
+                    }
+                    MouseEventKind::Down(crossterm::event::MouseButton::Left) => {
+                        state.drag_start(mouse.column as f64, mouse.row as f64);
+                    }
+                    MouseEventKind::Up(crossterm::event::MouseButton::Left) => {
+                        if state.drag_end() {
+                            pending_reload = true;
+                            last_navigation = Instant::now();
+                        }
+                    }
+                    MouseEventKind::Drag(crossterm::event::MouseButton::Left) => {
+                        if state.drag_to(mouse.column as f64, mouse.row as f64) {
+                            pending_reload = true;
+                            last_navigation = Instant::now();
+                        }
+                    }
+                    _ => {}
+                },
                 Event::Resize(_, _) => {
                     state.needs_redraw = true;
                     pending_reload = true;

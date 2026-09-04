@@ -114,7 +114,7 @@ impl TileSource {
             source,
             mode,
             cache: Mutex::new(LruCache::new(
-                NonZeroUsize::new(config.tile_cache_size).unwrap()
+                NonZeroUsize::new(config.tile_cache_size).unwrap(),
             )),
             http_client: reqwest::Client::new(),
             cache_dir,
@@ -239,10 +239,9 @@ impl TileSource {
             .map_err(|e| TileSourceError::MBTiles(e.to_string()))?;
 
         let data: Vec<u8> = stmt
-            .query_row(
-                rusqlite::params![key.z as u32, key.x, tms_y],
-                |row| row.get(0),
-            )
+            .query_row(rusqlite::params![key.z as u32, key.x, tms_y], |row| {
+                row.get(0)
+            })
             .map_err(|e| TileSourceError::MBTiles(e.to_string()))?;
 
         Ok(data)
