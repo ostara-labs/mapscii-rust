@@ -10,4 +10,4 @@ permissions:
 
 jobs:
   pr-meta:
-    uses: ostara-labs/devtools/.github/workflows/pr-meta.yml@a33b83f40da51cc62564d739606b558380aa6472 # v1.7.0
+    uses: ostara-labs/devtools/.github/workflows/pr-meta.yml@19fa4ab2f360f8b1c3c78a1e08ab2dc8d91a1d42 # v1.8.0
