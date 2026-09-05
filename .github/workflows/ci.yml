@@ -19,6 +19,6 @@ permissions:
 jobs:
   gate:
     name: gate
-    uses: ostara-labs/devtools/.github/workflows/ci.yml@8f2b8125d7eb67565474e50f8bb3bb67053a488d # v1.4.3
+    uses: ostara-labs/devtools/.github/workflows/ci.yml@68e7c6e6c0e5ef610c5492c82365928e15b424dd # v1.5.0
     with:
       stack-dir: "."
