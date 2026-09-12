@@ -1,0 +1,64 @@
+name: PR pipeline
+
+# Single PR pipeline (org-wide convergence model): CI -> AI review ->
+# merge gate, chained with needs. The pull_request event flows through
+# github.event into every callee -- no workflow_run, no context loss.
+#
+# Required checks: ci / gate (CI aggregate) and merge-gate (plain job).
+# Renaming these caller jobs blocks merges loudly (required checks never
+# report). Bump the @digest deliberately, in step with the submodule:
+# `make devtools-update`, then move the @SHA to the matching tag commit.
+#
+# Docs: ostara-labs/devtools docs/ai-review.md
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, unlabeled]
+
+concurrency:
+  group: pr-pipeline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  ci:
+    name: ci
+    permissions:
+      contents: read
+    uses: ostara-labs/devtools/.github/workflows/ci.yml@963c23b29239dfaee577cc391e2c77958a265092 # v1.12.0
+    with:
+      stack-dir: "."
+
+  ai-review:
+    name: ai-review
+    needs: ci
+    if: ${{ !cancelled() && needs.ci.result == 'success' && github.event_name == 'pull_request' && !github.event.pull_request.draft }}
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    uses: ostara-labs/devtools/.github/workflows/ai-review.yml@963c23b29239dfaee577cc391e2c77958a265092 # v1.12.0
+    secrets:
+      # This repo carries no repo-level AI_REVIEW_OPENROUTER_API_KEY; the
+      # org-level OPENROUTER_API_KEY is available to it (public repo), so
+      # map it onto the secret name the reusable reviewer expects.
+      AI_REVIEW_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+  merge-gate:
+    name: merge-gate
+    needs: [ci, ai-review]
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Verdict
+        uses: ostara-labs/devtools/.github/actions/merge-gate-verdict@963c23b29239dfaee577cc391e2c77958a265092 # v1.12.0
+        with:
+          ci-result: ${{ needs.ci.result }}
+          review-result: ${{ needs.ai-review.result }}
+          draft: ${{ github.event.pull_request.draft }}
+          labels: ${{ toJSON(github.event.pull_request.labels.*.name) }}
