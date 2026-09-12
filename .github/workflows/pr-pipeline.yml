@@ -48,6 +48,7 @@ jobs:
       AI_REVIEW_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
   merge-gate:
+    timeout-minutes: 15
     name: merge-gate
     needs: [ci, ai-review]
     if: ${{ !cancelled() && github.event_name == 'pull_request' && !github.event.pull_request.draft }}
