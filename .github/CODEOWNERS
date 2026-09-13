@@ -1,0 +1,5 @@
+# CODEOWNERS — trust-boundary pattern
+# Normal PRs merge without human approval; trust-boundary paths require explicit
+# owner approval via the `trust-boundary-codeowner-review` ruleset.
+
+/.github/ @Oloompa
