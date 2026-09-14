@@ -42,10 +42,8 @@ jobs:
       pull-requests: write
     uses: ostara-labs/devtools/.github/workflows/ai-review.yml@963c23b29239dfaee577cc391e2c77958a265092 # v1.12.0
     secrets:
-      # This repo carries no repo-level AI_REVIEW_OPENROUTER_API_KEY; the
-      # org-level OPENROUTER_API_KEY is available to it (public repo), so
-      # map it onto the secret name the reusable reviewer expects.
-      AI_REVIEW_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      # Org-wide secret (GitHub Team): inherited automatically, no per-repo copy.
+      AI_REVIEW_OPENROUTER_API_KEY: ${{ secrets.AI_REVIEW_OPENROUTER_API_KEY }}
 
   merge-gate:
     timeout-minutes: 15
