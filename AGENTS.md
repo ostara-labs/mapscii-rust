@@ -42,7 +42,7 @@ clippy).
 ## CI contract
 
 `.github/workflows/pr-pipeline.yml` is a thin caller pinned to an immutable
-`ostara-labs/devtools` digest (v1.12.0), chaining `ci` -> `ai-review` -> `merge-gate`.
+`ostara-labs/devtools` digest (v1.12.1), chaining `ci` -> `ai-review` -> `merge-gate`.
 
 - `ci / rust / rust` - `cargo fmt --all -- --check`, `cargo clippy --all-targets
   --all-features -- -D warnings`, `cargo test` (compiles the workspace).
