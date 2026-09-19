@@ -28,7 +28,7 @@ jobs:
     name: ci
     permissions:
       contents: read
-    uses: ostara-labs/devtools/.github/workflows/ci.yml@4c5f2593b127455822a7f7d150d1832d589c50a5 # v1.12.1
+    uses: ostara-labs/devtools/.github/workflows/ci.yml@b5d3237e80525ebd8b2be3f1356d3b83801a683c # v1.12.1
     with:
       stack-dir: "."
 
@@ -40,7 +40,7 @@ jobs:
       contents: read
       issues: write
       pull-requests: write
-    uses: ostara-labs/devtools/.github/workflows/ai-review.yml@4c5f2593b127455822a7f7d150d1832d589c50a5 # v1.12.1
+    uses: ostara-labs/devtools/.github/workflows/ai-review.yml@b5d3237e80525ebd8b2be3f1356d3b83801a683c # v1.12.1
     secrets:
       # Org-wide secret (GitHub Team): inherited automatically, no per-repo copy.
       AI_REVIEW_OPENROUTER_API_KEY: ${{ secrets.AI_REVIEW_OPENROUTER_API_KEY }}
@@ -55,7 +55,7 @@ jobs:
       contents: read
     steps:
       - name: Verdict
-        uses: ostara-labs/devtools/.github/actions/merge-gate-verdict@4c5f2593b127455822a7f7d150d1832d589c50a5 # v1.12.1
+        uses: ostara-labs/devtools/.github/actions/merge-gate-verdict@b5d3237e80525ebd8b2be3f1356d3b83801a683c # v1.12.1
         with:
           ci-result: ${{ needs.ci.result }}
           review-result: ${{ needs.ai-review.result }}
